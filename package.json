@@ -1,0 +1,20 @@
+{
+  "version": "0.0.0",
+  "name": "ng-alchemy",
+  "private": true,
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "build-dev": "webpack --config webpack.config.js --watch --progress"
+  },
+  "devDependencies": {
+    "@types/jasmine": "3.3.0",
+    "typescript": "3.1.6",
+    "karma": "3.1.1",
+    "karma-jasmine": "2.0.1",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-webpack": "3.0.5",
+    "webpack": "4.26.1",
+    "webpack-cli": "3.1.2",
+    "ts-loader": "5.3.0"
+  }
+}
