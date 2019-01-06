@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "build-dev": "webpack --config webpack.config.js --watch --progress"
+    "build-dev": "webpack --config webpack.config.js --watch --progress",
+    "test": "karma start karma.config.js"
   },
   "devDependencies": {
     "@types/jasmine": "3.3.0",

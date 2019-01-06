@@ -9,6 +9,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist/packages'),
         filename: '[name]/index.js'
     },
+    externals: {
+        typescript: 'ts'
+    },
     mode: "development",
     devtool: "inline-source-map",
     resolve: {extensions: [".ts"]},
