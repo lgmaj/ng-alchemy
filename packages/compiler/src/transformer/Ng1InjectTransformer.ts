@@ -1,6 +1,7 @@
 import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
 import {TSTranspilerData} from "../transpiler";
 import * as ts from 'typescript';
+import {extractClassName} from "../util";
 
 export class Ng1InjectTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -28,8 +29,4 @@ export class Ng1InjectTransformer implements CompilerUnitTransformer {
         return result;
     }
 
-}
-
-function extractClassName(value): string {
-    return value.split('.').pop();
 }

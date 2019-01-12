@@ -4,9 +4,11 @@ module.exports = function (config) {
         plugins: [
             'karma-jasmine',
             'karma-chrome-launcher',
-            'karma-webpack'
+            'karma-webpack',
+            'karma-mocha-reporter'
         ],
         browsers: ['Chrome'],
+        reporters: ['mocha'],
         preprocessors: {'packages/**/*.spec.ts': ['webpack']},
         webpack: {
             mode: "development",

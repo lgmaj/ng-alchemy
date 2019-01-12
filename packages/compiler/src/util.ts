@@ -11,3 +11,7 @@ export function crateCompilerConfig(...transformer: Array<CompilerUnitTransforme
 export function replaceRange(input: string, start: number, end: number, text: string): string {
     return input.substring(0, start) + text + input.substring(end);
 }
+
+export function extractClassName(value): string {
+    return value.split('.').pop();
+}

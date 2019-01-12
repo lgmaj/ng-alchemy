@@ -15,7 +15,7 @@ export class TSTranspiler {
 
     private visitor(node: ts.Node, source: ts.SourceFile): void {
         if (ts.isClassDeclaration(node)) {
-            this.dataBuilder.addClass(node.name.text);
+            this.dataBuilder.addClass(node.name.text, node.pos, node.end);
 
             const ctr: ts.ConstructorDeclaration = node.members.find(ts.isConstructorDeclaration);
 
@@ -142,7 +142,9 @@ class TSTranspilerClassData {
     readonly decorator: Array<string> = [];
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
 
-    constructor(readonly name: string) {
+    constructor(readonly name: string,
+                readonly start: number,
+                readonly end: number) {
     }
 }
 
@@ -161,8 +163,8 @@ export class TSTranspilerDataBuilder {
         return this;
     }
 
-    addClass(name: string): TSTranspilerDataBuilder {
-        this.data.classList.push(new TSTranspilerClassData(name));
+    addClass(name: string, start: number, end: number): TSTranspilerDataBuilder {
+        this.data.classList.push(new TSTranspilerClassData(name, start, end));
         this.current = this.data.classList[this.data.classList.length - 1];
         return this;
     }

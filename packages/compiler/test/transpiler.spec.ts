@@ -27,9 +27,9 @@ describe('transpiler spec', () => {
 
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
-            .addClass('TestService')
+            .addClass('TestService', 0, 60)
             .addClassDecorator('Injectable')
-            .addClass('TestComponent')
+            .addClass('TestComponent', 60, 339)
             .addClassDecorator('Component')
             .addClassConstructorParameterDecorator(new ConstructorParameterDecorator(
                 'Inject', [],
