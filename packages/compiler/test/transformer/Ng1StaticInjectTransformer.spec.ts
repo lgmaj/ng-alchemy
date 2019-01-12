@@ -30,4 +30,36 @@ describe('Ng1StaticInjectTransformerTest', () => {
 
         expect(result).toEqual(output);
     });
+
+    it('should transform many inject', function () {
+        const input: string = `
+        class A { 
+            constructor(){}
+        }
+        class B { 
+            constructor(@Inject(A) private a){}
+        }
+        class C { 
+            constructor(@Inject(B) readonly b){}
+        }
+        `;
+        const output: string = `
+        class A { 
+            constructor(){}
+        }
+        class B { 
+            constructor( private a){}
+        }B.$inject = ['A'];
+        class C { 
+            constructor( readonly b){}
+        }C.$inject = ['B'];
+        `;
+
+        const result = compile(
+            crateCompilationUnit('Foo.ts', input),
+            crateCompilerConfig(new Ng1StaticInjectTransformer())
+        );
+
+        expect(result).toEqual(output);
+    });
 });
