@@ -34,8 +34,8 @@ export class Ng1StaticInjectTransformer implements CompilerUnitTransformer {
                     });
             if (staticInject.length > 0) {
                 result.push({
-                    text: `${c.name}.$inject = [${staticInject.map(i => `'${i}'`).join(',')}];`,
-                    start: c.end, end: c.end
+                    text: `static $inject:Array<string> = [${staticInject.map(i => `'${i}'`).join(',')}];`,
+                    start: c.end - 1, end: c.end - 1
                 });
             }
         });

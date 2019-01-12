@@ -20,7 +20,7 @@ describe('Ng1StaticInjectTransformerTest', () => {
                          public foo1:Foo,
                          public foo1:Bar,
                          public foo1:Baz){}
-        }A.$inject = ['$q','$timeout','Foo','Bar','Baz'];
+        static $inject:Array<string> = ['$q','$timeout','Foo','Bar','Baz'];}
         `;
 
         const result = compile(
@@ -49,10 +49,10 @@ describe('Ng1StaticInjectTransformerTest', () => {
         }
         class B { 
             constructor( private a){}
-        }B.$inject = ['A'];
+        static $inject:Array<string> = ['A'];}
         class C { 
             constructor( readonly b){}
-        }C.$inject = ['B'];
+        static $inject:Array<string> = ['B'];}
         `;
 
         const result = compile(

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.js",
+    "build-example": "webpack --config example/webpack.config.js",
     "build-dev": "webpack --config webpack.config.js --watch --progress",
+    "build-loader": "tsc -p packages/loader/tsconfig.json",
     "test": "karma start karma.config.js"
   },
   "devDependencies": {
