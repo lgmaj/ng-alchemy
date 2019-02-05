@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules
+
+# Editors
+.idea
+
+# Optional npm cache directory
+.npm
+
+# npm package lock
+package-lock.json
+
+# ts src
+packages
+example
+
+# test config
+karma.config.js

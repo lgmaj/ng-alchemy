@@ -1,7 +1,6 @@
 {
   "version": "0.0.1",
   "name": "ng-alchemy",
-  "private": true,
   "main": "loader.js",
   "scripts": {
     "build": "tsc -p packages/tsconfig.json",
@@ -22,5 +21,11 @@
     "ts-loader": "5.3.0",
     "angular-ts-decorators": "3.7.7",
     "angular": "1.5.8"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lgmaj/ng-alchemy"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/lgmaj/ng-alchemy"
 }
