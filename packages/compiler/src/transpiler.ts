@@ -1,5 +1,12 @@
 import * as ts from 'typescript';
 import {CompilerUnit} from "./public_api";
+import {createProgram, createTranspilerOptions} from "./transpiler/util";
+import {
+    ConstructorParameterDecorator,
+    DecoratorData, PropertyDecoratorData,
+    TSTranspilerData,
+    TSTranspilerDataBuilder
+} from "./transpiler/model";
 
 export class TSTranspiler {
 
@@ -18,18 +25,25 @@ export class TSTranspiler {
         if (ts.isClassDeclaration(node)) {
             this.dataBuilder.addClass(node.name.text, node.pos, node.end);
 
+            node.members.filter(ts.isPropertyDeclaration).filter(n => !!n.decorators).forEach(property => {
+                property.decorators.forEach(decorator => {
+                    const exp: any = decorator.expression;
+                    this.dataBuilder.addPropertyDecoratorData(PropertyDecoratorData.fromTsSource(
+                        decorator, exp.arguments, property, source
+                    ));
+                })
+            });
+
             const ctr: ts.ConstructorDeclaration = node.members.find(ts.isConstructorDeclaration);
 
             if (ctr) {
-                ctr.parameters.forEach(param => {
-                    if (param.decorators) {
-                        param.decorators.forEach(decorator => {
-                            const exp: any = decorator.expression;
-                            this.dataBuilder.addClassConstructorParameterDecorator(ConstructorParameterDecorator.fromTsSource(
-                                decorator, exp.arguments, param, source
-                            ));
-                        })
-                    }
+                ctr.parameters.filter(p => !!p.decorators).forEach(param => {
+                    param.decorators.forEach(decorator => {
+                        const exp: any = decorator.expression;
+                        this.dataBuilder.addClassConstructorParameterDecorator(ConstructorParameterDecorator.fromTsSource(
+                            decorator, exp.arguments, param, source
+                        ));
+                    })
                 })
             }
 
@@ -42,243 +56,5 @@ export class TSTranspiler {
                 })
             }
         }
-    }
-
-}
-
-function createProgram(compilerUnit: CompilerUnit, options: ts.CompilerOptions): ts.Program {
-    const fileSystem = new FileSystemMock();
-    fileSystem.add(compilerUnit.name, compilerUnit.content, options.target);
-
-    return ts.createProgram([compilerUnit.name], options, new CompilerHostMock(fileSystem))
-}
-
-function createTranspilerOptions(): ts.CompilerOptions {
-    return {
-        target: ts.ScriptTarget.ES5,
-        module: ts.ModuleKind.CommonJS,
-        isolatedModules: true,
-        // transpileModule does not write anything to disk so there is no need to verify that there are no conflicts between input and output paths.
-        suppressOutputPathCheck: true,
-        // Filename can be non-ts file.
-        allowNonTsExtensions: true,
-        // We are not returning a sourceFile for lib file when asked by the program,
-        // so pass --noLib to avoid reporting a file not found error.
-        noLib: true,
-        // Clear out other settings that would not be used in transpiling this module
-        lib: undefined,
-        types: undefined,
-        noEmit: undefined,
-        noEmitOnError: undefined,
-        paths: undefined,
-        rootDirs: undefined,
-        declaration: undefined,
-        composite: undefined,
-        declarationDir: undefined,
-        out: undefined,
-        outFile: undefined,
-        // We are not doing a full typecheck, we are not resolving the whole context,
-        // so pass --noResolve to avoid reporting missing file errors.
-        noResolve: true
-    };
-}
-
-function getIdentifier(node: ts.Node): string {
-    return ts.isIdentifier(node) ? node.escapedText as string : null;
-}
-
-export class ConstructorParameter {
-    constructor(readonly name: string,
-                readonly type: string) {
-    }
-
-    static fromTsSource(param: ts.ParameterDeclaration,
-                        source: ts.SourceFile) {
-        return new ConstructorParameter(
-            getIdentifier(param.name),
-            param.type ? param.type.getText(source) : null
-        );
-    }
-}
-
-export class DecoratorArguments {
-    constructor(readonly kind: ts.SyntaxKind,
-                readonly text: string) {
-    }
-
-    static fromTsSource(arg: any, source: ts.SourceFile): DecoratorArguments {
-        return new DecoratorArguments(
-            arg.kind,
-            arg.getText(source)
-        );
-    }
-}
-
-export class TextRange {
-    constructor(readonly text: string,
-                readonly start: number,
-                readonly end: number) {
-    }
-
-    static fromTsSource(node: ts.Node, source: ts.SourceFile): TextRange {
-        return new TextRange(
-            node.getText(source),
-            node.getStart(source),
-            node.getEnd(),
-        );
-    }
-}
-
-export class DecoratorData {
-    constructor(readonly name: string,
-                readonly args: Array<DecoratorArguments>,
-                readonly text: string,
-                readonly start: number,
-                readonly end: number) {
-    }
-
-    static fromTsSource(decorator: ts.Decorator,
-                        args: Array<any>,
-                        source: ts.SourceFile): DecoratorData {
-        const exp: any = decorator.expression;
-        return new DecoratorData(
-            exp.expression.text,
-            args.map(arg => DecoratorArguments.fromTsSource(arg, source)),
-            decorator.getText(source),
-            decorator.getStart(source),
-            decorator.getEnd()
-        );
-    }
-}
-
-export class ConstructorParameterDecorator {
-    constructor(readonly name: string,
-                readonly args: Array<DecoratorArguments>,
-                readonly text: string,
-                readonly start: number,
-                readonly end: number,
-                readonly parameter: ConstructorParameter) {
-    }
-
-    static fromTsSource(decorator: ts.Decorator,
-                        args: Array<any>,
-                        param: ts.ParameterDeclaration,
-                        source: ts.SourceFile): ConstructorParameterDecorator {
-        const exp: any = decorator.expression;
-        return new ConstructorParameterDecorator(
-            exp.expression.text,
-            args.map(arg => DecoratorArguments.fromTsSource(arg, source)),
-            decorator.getText(source),
-            decorator.getStart(source),
-            decorator.getEnd(),
-            ConstructorParameter.fromTsSource(param, source)
-        );
-    }
-}
-
-class TSTranspilerClassData {
-    readonly decorator: Array<DecoratorData> = [];
-    readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
-
-    constructor(readonly name: string,
-                readonly start: number,
-                readonly end: number) {
-    }
-}
-
-export interface TSTranspilerData {
-    input: string;
-    classList: Array<TSTranspilerClassData>;
-}
-
-export class TSTranspilerDataBuilder {
-
-    private data: TSTranspilerData = {input: '', classList: []};
-    private current: TSTranspilerClassData = null;
-
-    withInput(value: string): TSTranspilerDataBuilder {
-        this.data.input = value;
-        return this;
-    }
-
-    addClass(name: string, start: number, end: number): TSTranspilerDataBuilder {
-        this.data.classList.push(new TSTranspilerClassData(name, start, end));
-        this.current = this.data.classList[this.data.classList.length - 1];
-        return this;
-    }
-
-    addClassDecorator(name: DecoratorData): TSTranspilerDataBuilder {
-        this.current.decorator.push(name);
-        return this;
-    }
-
-    addClassConstructorParameterDecorator(decorator: ConstructorParameterDecorator): TSTranspilerDataBuilder {
-        this.current.constructorParameterDecorator.push(decorator);
-        return this;
-    }
-
-    build(): TSTranspilerData {
-        return this.data;
-    }
-}
-
-class FileSystemMock {
-    private files: Array<ts.SourceFile> = [];
-
-    add(fileName: string, sourceText: string, languageVersion: ts.ScriptTarget): void {
-        this.files.push(ts.createSourceFile(fileName, sourceText, languageVersion));
-    }
-
-    find(fileName: string) {
-        return this.files.find(source => source.fileName === fileName);
-    }
-}
-
-class CompilerHostMock {
-
-    constructor(private fileSystem: FileSystemMock) {
-    }
-
-    getSourceFile(fileName) {
-        return this.fileSystem.find(fileName);
-    }
-
-    writeFile(name, text) {
-    }
-
-    getDefaultLibFileName() {
-        return "lib.d.ts";
-    }
-
-    useCaseSensitiveFileNames() {
-        return false;
-    }
-
-    getCanonicalFileName(fileName) {
-        return fileName;
-    }
-
-    getCurrentDirectory() {
-        return "";
-    }
-
-    getNewLine() {
-        return '\n';
-    }
-
-    fileExists(fileName) {
-        return !!this.getSourceFile(fileName);
-    }
-
-    readFile() {
-        return "";
-    }
-
-    directoryExists() {
-        return true;
-    }
-
-    getDirectories() {
-        return [];
     }
 }

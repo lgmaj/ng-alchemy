@@ -1,4 +1,4 @@
-import {TSTranspilerData} from "./transpiler";
+import {TSTranspilerData} from "./transpiler/model";
 
 export interface CompilerUnit {
     name: string;

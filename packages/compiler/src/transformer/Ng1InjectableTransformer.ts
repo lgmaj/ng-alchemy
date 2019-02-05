@@ -1,5 +1,5 @@
 import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
-import {TSTranspilerData} from "../transpiler";
+import {TSTranspilerData} from "../transpiler/model";
 
 export class Ng1InjectableTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {

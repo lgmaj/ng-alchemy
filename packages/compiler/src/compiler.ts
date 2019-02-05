@@ -1,6 +1,7 @@
 import {CompilerConfig, CompilerUnit, CompilerUnitTransformer, SourceTransformation} from "./public_api";
-import {TSTranspiler, TSTranspilerData} from "./transpiler";
+import {TSTranspiler} from "./transpiler";
 import {replaceRange} from "./util";
+import {TSTranspilerData} from "./transpiler/model";
 
 export function compile(unit: CompilerUnit, config: CompilerConfig): string {
     assertCompilerInput(unit, config);

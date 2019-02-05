@@ -1,6 +1,12 @@
-import {compile, CompilerUnit, CompilerUnitTransformer, SourceTransformation} from "../src";
-import {crateCompilationUnit, crateCompilerConfig} from "../src/util";
-import {TSTranspilerData} from "../src/transpiler";
+import {
+    compile,
+    CompilerUnit,
+    CompilerUnitTransformer,
+    crateCompilationUnit,
+    crateCompilerConfig,
+    SourceTransformation
+} from "../src";
+import {TSTranspilerData} from "../src/transpiler/model";
 
 describe('compiler spec', () => {
     it('should throw error if compiler config is null', () => {

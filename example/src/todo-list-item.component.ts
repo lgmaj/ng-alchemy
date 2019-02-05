@@ -8,7 +8,7 @@ import {Component, Input} from "angular-ts-decorators";
             </label>`
 })
 export class TodoListItemComponent {
-    @Input()
+    @Input('=')
     done: boolean;
     @Input()
     text: string;

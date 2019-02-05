@@ -1,7 +1,7 @@
 import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
-import {TSTranspilerData} from "../transpiler";
 import {extractClassName} from "../util";
 import * as ts from 'typescript';
+import {TSTranspilerData} from "../transpiler/model";
 
 export class Ng1StaticInjectTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
