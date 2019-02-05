@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es5",
-    "noResolve": true,
-    "experimentalDecorators": true
-  }
+    "module": "commonjs",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "outDir": "../dist/tsc",
+    "moduleResolution": "node",
+    "importHelpers": true
+  },
+  "include": [
+    "./*.ts"
+  ]
 }

@@ -1,10 +1,14 @@
 import {
     ConstructorParameter,
-    ConstructorParameterDecorator, DecoratorArguments,
+    ConstructorParameterDecorator,
+    DecoratorArguments,
+    DecoratorData,
     TSTranspiler,
     TSTranspilerDataBuilder
 } from "../src/transpiler";
 import * as ts from 'typescript';
+import {CompilerUnit} from "../src";
+import {crateCompilationUnit} from "../src/util";
 
 describe('transpiler spec', () => {
 
@@ -23,14 +27,19 @@ describe('transpiler spec', () => {
         }
         `;
 
-        const data = new TSTranspiler().transpile(file);
+        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file));
 
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
             .addClass('TestService', 0, 60)
-            .addClassDecorator('Injectable')
+            .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
             .addClass('TestComponent', 60, 339)
-            .addClassDecorator('Component')
+            .addClassDecorator(new DecoratorData(
+                'Component',
+                [new DecoratorArguments(ts.SyntaxKind.ObjectLiteralExpression, `{selector: 'ng-alchemy-test'}`)],
+                `@Component({selector: 'ng-alchemy-test'})`,
+                78, 119
+            ))
             .addClassConstructorParameterDecorator(new ConstructorParameterDecorator(
                 'Inject', [],
                 '@Inject()', 174, 183,
@@ -52,3 +61,8 @@ describe('transpiler spec', () => {
         );
     });
 });
+
+function crateCompilationUnitMock(content ?: string): CompilerUnit {
+    return crateCompilationUnit(name || 'Foo.ts', content || 'export class Foo {}');
+}
+

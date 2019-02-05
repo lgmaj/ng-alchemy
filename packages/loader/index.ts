@@ -1,10 +1,28 @@
-import {compile} from "../compiler/src";
-import {crateCompilationUnit, crateCompilerConfig} from "../compiler/src/util";
-import {Ng1StaticInjectTransformer} from "../compiler/src/transformer/Ng1StaticInjectTransformer";
+import {
+    compile,
+    CompilerUnitTransformer,
+    crateCompilationUnit,
+    crateCompilerConfigFromArray,
+    Ng1StaticInjectTransformer
+} from '../compiler';
 
-export default function loader(source) {
+const registry: {[key: string]: Array<CompilerUnitTransformer>}  = {};
+
+export default function loader(source): string {
     return compile(
-        crateCompilationUnit('NgAlchemyEntry.ts', source),
-        crateCompilerConfig(new Ng1StaticInjectTransformer())
+        crateCompilationUnit(this.resourcePath, source),
+        crateCompilerConfigFromArray(getTransformers(this.query))
     )
+}
+
+export function registerTranformers(name: string, transformer: Array<CompilerUnitTransformer>): void {
+    registry[name] = transformer;
+}
+
+function getTransformers(query): Array<CompilerUnitTransformer> {
+    if (query && query.transformers && registry[query.transformers]) {
+        return registry[query.transformers];
+    }
+
+    return [new Ng1StaticInjectTransformer()];
 }

@@ -2,7 +2,6 @@ import {CompilerConfig, CompilerUnit, CompilerUnitTransformer, SourceTransformat
 import {TSTranspiler, TSTranspilerData} from "./transpiler";
 import {replaceRange} from "./util";
 
-
 export function compile(unit: CompilerUnit, config: CompilerConfig): string {
     assertCompilerInput(unit, config);
     return config.transformers
@@ -43,6 +42,6 @@ class CompilerContext {
     }
 
     static create(unit: CompilerUnit): CompilerContext {
-        return new CompilerContext(new TSTranspiler().transpile(unit.content));
+        return new CompilerContext(new TSTranspiler().transpile(unit));
     }
 }

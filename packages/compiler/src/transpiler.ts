@@ -1,16 +1,17 @@
 import * as ts from 'typescript';
+import {CompilerUnit} from "./public_api";
 
 export class TSTranspiler {
 
     private dataBuilder: TSTranspilerDataBuilder = new TSTranspilerDataBuilder();
 
-    transpile(input: string): TSTranspilerData {
-        createProgram(input, createTranspilerOptions())
+    transpile(compilerUnit: CompilerUnit): TSTranspilerData {
+        createProgram(compilerUnit, createTranspilerOptions())
             .getSourceFiles()
             .filter(source => !source.isDeclarationFile)
             .forEach(source => ts.forEachChild(source, node => this.visitor(node, source)));
 
-        return this.dataBuilder.withInput(input).build();
+        return this.dataBuilder.withInput(compilerUnit.content).build();
     }
 
     private visitor(node: ts.Node, source: ts.SourceFile): void {
@@ -35,7 +36,9 @@ export class TSTranspiler {
             if (node.decorators) {
                 node.decorators.forEach(decorator => {
                     const exp: any = decorator.expression;
-                    this.dataBuilder.addClassDecorator(exp.expression.text);
+                    this.dataBuilder.addClassDecorator(DecoratorData.fromTsSource(
+                        decorator, exp.arguments, source
+                    ));
                 })
             }
         }
@@ -43,13 +46,11 @@ export class TSTranspiler {
 
 }
 
-function createProgram(input: string, options: ts.CompilerOptions): ts.Program {
-    const inputFileName = 'module.ts';
+function createProgram(compilerUnit: CompilerUnit, options: ts.CompilerOptions): ts.Program {
     const fileSystem = new FileSystemMock();
+    fileSystem.add(compilerUnit.name, compilerUnit.content, options.target);
 
-    fileSystem.add(inputFileName, input, options.target);
-
-    return ts.createProgram([inputFileName], options, new CompilerHostMock(fileSystem))
+    return ts.createProgram([compilerUnit.name], options, new CompilerHostMock(fileSystem))
 }
 
 function createTranspilerOptions(): ts.CompilerOptions {
@@ -113,6 +114,43 @@ export class DecoratorArguments {
     }
 }
 
+export class TextRange {
+    constructor(readonly text: string,
+                readonly start: number,
+                readonly end: number) {
+    }
+
+    static fromTsSource(node: ts.Node, source: ts.SourceFile): TextRange {
+        return new TextRange(
+            node.getText(source),
+            node.getStart(source),
+            node.getEnd(),
+        );
+    }
+}
+
+export class DecoratorData {
+    constructor(readonly name: string,
+                readonly args: Array<DecoratorArguments>,
+                readonly text: string,
+                readonly start: number,
+                readonly end: number) {
+    }
+
+    static fromTsSource(decorator: ts.Decorator,
+                        args: Array<any>,
+                        source: ts.SourceFile): DecoratorData {
+        const exp: any = decorator.expression;
+        return new DecoratorData(
+            exp.expression.text,
+            args.map(arg => DecoratorArguments.fromTsSource(arg, source)),
+            decorator.getText(source),
+            decorator.getStart(source),
+            decorator.getEnd()
+        );
+    }
+}
+
 export class ConstructorParameterDecorator {
     constructor(readonly name: string,
                 readonly args: Array<DecoratorArguments>,
@@ -139,7 +177,7 @@ export class ConstructorParameterDecorator {
 }
 
 class TSTranspilerClassData {
-    readonly decorator: Array<string> = [];
+    readonly decorator: Array<DecoratorData> = [];
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
 
     constructor(readonly name: string,
@@ -169,7 +207,7 @@ export class TSTranspilerDataBuilder {
         return this;
     }
 
-    addClassDecorator(name: string): TSTranspilerDataBuilder {
+    addClassDecorator(name: DecoratorData): TSTranspilerDataBuilder {
         this.current.decorator.push(name);
         return this;
     }
@@ -206,8 +244,6 @@ class CompilerHostMock {
     }
 
     writeFile(name, text) {
-        console.log('[ng-alchemy][compilerHost][writeFile][name]', name);
-        console.log('[ng-alchemy][compilerHost][writeFile][text]', text);
     }
 
     getDefaultLibFileName() {
@@ -231,7 +267,6 @@ class CompilerHostMock {
     }
 
     fileExists(fileName) {
-        console.log('[ng-alchemy][compilerHost][fileExists]', fileName);
         return !!this.getSourceFile(fileName);
     }
 

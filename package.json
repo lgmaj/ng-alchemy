@@ -1,15 +1,15 @@
 {
-  "version": "0.0.0",
+  "version": "0.0.1",
   "name": "ng-alchemy",
   "private": true,
+  "main": "loader.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build": "tsc -p packages/tsconfig.json",
     "build-example": "webpack --config example/webpack.config.js",
-    "build-dev": "webpack --config webpack.config.js --watch --progress",
-    "build-loader": "tsc -p packages/loader/tsconfig.json",
     "test": "karma start karma.config.js"
   },
   "devDependencies": {
+    "@types/angular": "^1.6.24",
     "@types/jasmine": "3.3.0",
     "typescript": "3.1.6",
     "karma": "3.1.1",
@@ -19,6 +19,8 @@
     "karma-mocha-reporter": "2.2.5",
     "webpack": "4.26.1",
     "webpack-cli": "3.1.2",
-    "ts-loader": "5.3.0"
+    "ts-loader": "5.3.0",
+    "angular-ts-decorators": "3.7.7",
+    "angular": "1.5.8"
   }
 }

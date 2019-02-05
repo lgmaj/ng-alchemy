@@ -5,6 +5,10 @@ export function crateCompilationUnit(name: string, content: string): CompilerUni
 }
 
 export function crateCompilerConfig(...transformer: Array<CompilerUnitTransformer>): CompilerConfig {
+    return crateCompilerConfigFromArray(transformer);
+}
+
+export function crateCompilerConfigFromArray(transformer: Array<CompilerUnitTransformer>): CompilerConfig {
     return {transformers: transformer}
 }
 

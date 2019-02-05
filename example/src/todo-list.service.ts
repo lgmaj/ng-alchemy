@@ -1,5 +1,7 @@
 import {Todo} from "./Todo";
+import {Injectable} from "angular-ts-decorators";
 
+@Injectable()
 export class TodoListService {
     load(): Array<Todo> {
         return [
