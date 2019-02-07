@@ -6,7 +6,7 @@ export interface CompilerUnit {
 }
 
 export interface CompilerUnitTransformer {
-    transform(content: TSTranspilerData): Array<SourceTransformation>;
+    transform(data: TSTranspilerData): Array<SourceTransformation>;
 }
 
 export class SourceTransformation {

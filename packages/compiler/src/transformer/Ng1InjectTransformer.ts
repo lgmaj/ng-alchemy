@@ -2,6 +2,7 @@ import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
 import * as ts from 'typescript';
 import {extractClassName} from "../util";
 import {TSTranspilerData} from "../transpiler/model";
+import {update} from "../transformation";
 
 export class Ng1InjectTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -23,7 +24,7 @@ export class Ng1InjectTransformer implements CompilerUnitTransformer {
                     }
 
                     if (type) {
-                        result.push({text: `@Inject('${type}')`, start: d.start, end: d.end})
+                        result.push(update(`@Inject('${type}')`, d))
                     }
                 }));
         return result;

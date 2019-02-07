@@ -1,6 +1,6 @@
 import {compile} from "../../src";
-import {crateCompilationUnit, crateCompilerConfig} from "../../src/util";
-import {Ng1InjectTransformer} from "../../src/transformer/Ng1InjectTransformer";
+import {crateCompilationUnit, crateCompilerConfig} from "../../src";
+import {Ng1InjectTransformer} from "../../src/transformer";
 
 describe('Ng1InjectTransformerTest', () => {
     it('should transform type to string', function () {

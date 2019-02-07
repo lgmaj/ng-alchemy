@@ -1,6 +1,6 @@
 import {compile} from "../../src";
-import {crateCompilationUnit, crateCompilerConfig} from "../../src/util";
-import {Ng1StaticInjectTransformer} from "../../src/transformer/Ng1StaticInjectTransformer";
+import {crateCompilationUnit, crateCompilerConfig} from "../../src";
+import {Ng1StaticInjectTransformer} from "../../src/transformer";
 
 describe('Ng1StaticInjectTransformerTest', () => {
     it('should deduce type from param type', function () {

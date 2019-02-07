@@ -2,12 +2,10 @@ const path = require('path');
 const compiler = require('../compiler');
 const loader = require('../loader');
 
-const ANGULAR_TS_DECORATORS_INTEGRATION = 'angular-ts-decorators-integration';
-
-loader.registerTranformers(ANGULAR_TS_DECORATORS_INTEGRATION, [
-    new compiler.Ng1StaticInjectTransformer(),
-    new compiler.Ng1InjectableTransformer()
-]);
+const ANGULAR_TS_DECORATORS_INTEGRATION = loader.optionsBuilder()
+    .addStaticInjectTransformer()
+    .addTransformer(new compiler.Ng1InjectableTransformer())
+    .build('angular-ts-decorators-integration');
 
 module.exports = {
     entry: path.resolve(__dirname, './src/index.ts'),

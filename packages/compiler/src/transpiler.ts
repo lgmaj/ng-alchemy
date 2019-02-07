@@ -1,9 +1,11 @@
 import * as ts from 'typescript';
 import {CompilerUnit} from "./public_api";
-import {createProgram, createTranspilerOptions} from "./transpiler/util";
+import {createProgram} from "./transpiler/util";
+import {createTranspilerOptions} from "./transpiler/options";
 import {
     ConstructorParameterDecorator,
-    DecoratorData, PropertyDecoratorData,
+    DecoratorData,
+    PropertyDecoratorData,
     TSTranspilerData,
     TSTranspilerDataBuilder
 } from "./transpiler/model";

@@ -2,6 +2,7 @@ import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
 import {extractClassName} from "../util";
 import * as ts from 'typescript';
 import {TSTranspilerData} from "../transpiler/model";
+import {add, remove} from "../transformation";
 
 export class Ng1StaticInjectTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -29,14 +30,14 @@ export class Ng1StaticInjectTransformer implements CompilerUnitTransformer {
 
                         if (type) {
                             staticInject.push(type);
-                            result.push({text: '', start: d.start, end: d.end})
+                            result.push(remove(d))
                         }
                     });
             if (staticInject.length > 0) {
-                result.push({
-                    text: `static $inject:Array<string> = [${staticInject.map(i => `'${i}'`).join(',')}];`,
-                    start: c.end - 1, end: c.end - 1
-                });
+                result.push(add(
+                    `static $inject:Array<string> = [${staticInject.map(i => `'${i}'`).join(',')}];`,
+                    c.end - 1
+                ));
             }
         });
         return result;

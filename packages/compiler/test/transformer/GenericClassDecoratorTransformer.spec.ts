@@ -1,15 +1,19 @@
-import {compile} from "../../src";
-import {crateCompilationUnit, crateCompilerConfig} from "../../src";
-import {Ng1InjectableTransformer} from "../../src/transformer";
+import {compile, crateCompilationUnit, crateCompilerConfig, update} from "../../src";
+import {GenericClassDecoratorTransformer} from "../../src/transformer/GenericClassDecoratorTransformer";
 
-describe('Ng1InjectableTransformerTest', () => {
+const generic = new GenericClassDecoratorTransformer(
+    d => d.name === 'Injectable' && d.args.length === 0,
+    (c, d) => update(`@Injectable('${c.name}')`, d)
+);
+
+describe('GenericClassDecoratorTransformerTest', () => {
     it('should add name from type', function () {
         const input: string = '@Injectable() class Foo {}';
         const output: string = `@Injectable('Foo') class Foo {}`;
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectableTransformer())
+            crateCompilerConfig(generic)
         );
 
         expect(result).toEqual(output);
@@ -21,7 +25,7 @@ describe('Ng1InjectableTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectableTransformer())
+            crateCompilerConfig(generic)
         );
 
         expect(result).toEqual(output);
@@ -33,7 +37,7 @@ describe('Ng1InjectableTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectableTransformer())
+            crateCompilerConfig(generic)
         );
 
         expect(result).toEqual(output);

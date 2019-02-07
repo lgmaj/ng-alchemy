@@ -47,22 +47,15 @@ export class TextRange {
                 readonly start: number,
                 readonly end: number) {
     }
-
-    static fromTsSource(node: ts.Node, source: ts.SourceFile): TextRange {
-        return new TextRange(
-            node.getText(source),
-            node.getStart(source),
-            node.getEnd(),
-        );
-    }
 }
 
-export class DecoratorData {
+export class DecoratorData extends TextRange {
     constructor(readonly name: string,
                 readonly args: Array<DecoratorArguments>,
-                readonly text: string,
-                readonly start: number,
-                readonly end: number) {
+                text: string,
+                start: number,
+                end: number) {
+        super(text, start, end);
     }
 
     static fromTsSource(decorator: ts.Decorator,
@@ -79,13 +72,14 @@ export class DecoratorData {
     }
 }
 
-export class PropertyDecoratorData {
+export class PropertyDecoratorData extends TextRange {
     constructor(readonly name: string,
                 readonly args: Array<DecoratorArguments>,
-                readonly text: string,
-                readonly start: number,
-                readonly end: number,
+                text: string,
+                start: number,
+                end: number,
                 readonly propert: PropertyData) {
+        super(text, start, end);
     }
 
     static fromTsSource(decorator: ts.Decorator,
@@ -104,13 +98,14 @@ export class PropertyDecoratorData {
     }
 }
 
-export class ConstructorParameterDecorator {
+export class ConstructorParameterDecorator extends TextRange {
     constructor(readonly name: string,
                 readonly args: Array<DecoratorArguments>,
-                readonly text: string,
-                readonly start: number,
-                readonly end: number,
+                text: string,
+                start: number,
+                end: number,
                 readonly parameter: ConstructorParameter) {
+        super(text, start, end);
     }
 
     static fromTsSource(decorator: ts.Decorator,
@@ -129,7 +124,7 @@ export class ConstructorParameterDecorator {
     }
 }
 
-class TSTranspilerClassData {
+export class TSTranspilerClassData {
     readonly decorator: Array<DecoratorData> = [];
     readonly propertyDecorator: Array<PropertyDecoratorData> = [];
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
