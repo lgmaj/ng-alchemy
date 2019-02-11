@@ -6,7 +6,10 @@ import {
     ConstructorParameter,
     ConstructorParameterDecorator,
     DecoratorArguments,
-    DecoratorData, PropertyData, PropertyDecoratorData,
+    DecoratorData,
+    PropertyData,
+    PropertyDecoratorData,
+    TSTranspilerClassData,
     TSTranspilerDataBuilder
 } from "../src/transpiler/model";
 
@@ -38,15 +41,21 @@ describe('transpiler spec', () => {
             $onDestroy() : void {
             }
         }
+        
+        @Component({selector: 'ng-alchemy-extended-test', template: 'new better component'})
+        class ExtendedTestComponent extends TestComponent implements IController {
+            $onDestroy() : void {
+            }
+        }
         `;
 
         const data = new TSTranspiler().transpile(crateCompilationUnitMock(file));
 
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
-            .addClass('TestService', 0, 60)
+            .addClass(new TSTranspilerClassData('TestService', 0, 60, undefined, []))
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
-            .addClass('TestComponent', 60, 585)
+            .addClass(new TSTranspilerClassData('TestComponent', 60, 585, undefined, []))
             .addClassDecorator(new DecoratorData(
                 'Component',
                 [new DecoratorArguments(ts.SyntaxKind.ObjectLiteralExpression, `{selector: 'ng-alchemy-test'}`)],
@@ -86,6 +95,14 @@ describe('transpiler spec', () => {
             ))
             .addClassMethod(new ClassMethodData('$onInit', 482, 514))
             .addClassMethod(new ClassMethodData('$onDestroy', 540, 575))
+            .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController']))
+            .addClassDecorator(new DecoratorData(
+                'Component',
+                [new DecoratorArguments(ts.SyntaxKind.ObjectLiteralExpression, `{selector: 'ng-alchemy-extended-test', template: 'new better component'}`)],
+                `@Component({selector: 'ng-alchemy-extended-test', template: 'new better component'})`,
+                603, 687
+            ))
+            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818))
             .build()
         );
     });

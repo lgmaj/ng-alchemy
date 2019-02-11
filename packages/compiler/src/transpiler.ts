@@ -6,7 +6,7 @@ import {
     ClassMethodData,
     ConstructorParameterDecorator,
     DecoratorData,
-    PropertyDecoratorData,
+    PropertyDecoratorData, TSTranspilerClassData,
     TSTranspilerData,
     TSTranspilerDataBuilder
 } from "./transpiler/model";
@@ -26,7 +26,7 @@ export class TSTranspiler {
 
     private visitor(node: ts.Node, source: ts.SourceFile): void {
         if (ts.isClassDeclaration(node)) {
-            this.dataBuilder.addClass(node.name.text, node.pos, node.end);
+            this.dataBuilder.addClass(TSTranspilerClassData.fromTsSource(node));
 
             node.members.filter(ts.isPropertyDeclaration).filter(n => !!n.decorators).forEach(property => {
                 property.decorators.forEach(decorator => {

@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import {getIdentifier, getModifiers} from "./util";
+import {first, getHeritageClauses, getIdentifier, getModifiers} from "./util";
 
 export class PropertyData {
     constructor(readonly name: string,
@@ -150,7 +150,19 @@ export class TSTranspilerClassData {
 
     constructor(readonly name: string,
                 readonly start: number,
-                readonly end: number) {
+                readonly end: number,
+                readonly extendsOf: string,
+                readonly implementsOf: Array<string>) {
+    }
+
+    static fromTsSource(node: ts.ClassDeclaration): TSTranspilerClassData {
+        return new TSTranspilerClassData(
+            node.name.text,
+            node.pos,
+            node.end,
+            first(getHeritageClauses(node, ts.SyntaxKind.ExtendsKeyword)),
+            getHeritageClauses(node, ts.SyntaxKind.ImplementsKeyword)
+        );
     }
 }
 
@@ -169,8 +181,8 @@ export class TSTranspilerDataBuilder {
         return this;
     }
 
-    addClass(name: string, start: number, end: number): TSTranspilerDataBuilder {
-        this.data.classList.push(new TSTranspilerClassData(name, start, end));
+    addClass(clazz: TSTranspilerClassData): TSTranspilerDataBuilder {
+        this.data.classList.push(clazz);
         this.current = this.data.classList[this.data.classList.length - 1];
         return this;
     }
