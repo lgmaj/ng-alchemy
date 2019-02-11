@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import {getIdentifier} from "./util";
+import {getIdentifier, getModifiers} from "./util";
 
 export class PropertyData {
     constructor(readonly name: string,
@@ -17,14 +17,16 @@ export class PropertyData {
 
 export class ConstructorParameter {
     constructor(readonly name: string,
-                readonly type: string) {
+                readonly type: string,
+                readonly modifiers: Array<number>) {
     }
 
     static fromTsSource(param: ts.ParameterDeclaration,
                         source: ts.SourceFile) {
         return new ConstructorParameter(
             getIdentifier(param.name),
-            param.type ? param.type.getText(source) : null
+            param.type ? param.type.getText(source) : null,
+            getModifiers(param)
         );
     }
 }
@@ -124,10 +126,27 @@ export class ConstructorParameterDecorator extends TextRange {
     }
 }
 
+export class ClassMethodData {
+    constructor(readonly name: string,
+                readonly start: number,
+                readonly end: number) {
+    }
+
+    static fromTsSource(method: ts.MethodDeclaration, source: ts.SourceFile) {
+        return new ClassMethodData(
+            getIdentifier(method.name),
+            method.getStart(source),
+            method.getEnd()
+        );
+    }
+}
+
 export class TSTranspilerClassData {
     readonly decorator: Array<DecoratorData> = [];
     readonly propertyDecorator: Array<PropertyDecoratorData> = [];
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
+
+    readonly methods: Array<ClassMethodData> = [];
 
     constructor(readonly name: string,
                 readonly start: number,
@@ -168,6 +187,11 @@ export class TSTranspilerDataBuilder {
 
     addClassConstructorParameterDecorator(decorator: ConstructorParameterDecorator): TSTranspilerDataBuilder {
         this.current.constructorParameterDecorator.push(decorator);
+        return this;
+    }
+
+    addClassMethod(method: ClassMethodData): TSTranspilerDataBuilder {
+        this.current.methods.push(method);
         return this;
     }
 

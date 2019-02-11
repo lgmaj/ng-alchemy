@@ -2,6 +2,7 @@ import * as ts from 'typescript';
 import {CompilerUnit, crateCompilationUnit} from "../src";
 import {TSTranspiler} from "../src/transpiler";
 import {
+    ClassMethodData,
     ConstructorParameter,
     ConstructorParameterDecorator,
     DecoratorArguments,
@@ -30,6 +31,12 @@ describe('transpiler spec', () => {
             constructor(@Inject() $injector,
                         @Inject('$q') private $q:any,
                         @Inject(TestService) private testService:TestService) {}
+            
+            $onInit() : void {
+            }
+            
+            $onDestroy() : void {
+            }
         }
         `;
 
@@ -39,7 +46,7 @@ describe('transpiler spec', () => {
             .withInput(file)
             .addClass('TestService', 0, 60)
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
-            .addClass('TestComponent', 60, 466)
+            .addClass('TestComponent', 60, 585)
             .addClassDecorator(new DecoratorData(
                 'Component',
                 [new DecoratorArguments(ts.SyntaxKind.ObjectLiteralExpression, `{selector: 'ng-alchemy-test'}`)],
@@ -63,20 +70,22 @@ describe('transpiler spec', () => {
             .addClassConstructorParameterDecorator(new ConstructorParameterDecorator(
                 'Inject', [],
                 '@Inject()', 301, 310,
-                new ConstructorParameter('$injector', null)
+                new ConstructorParameter('$injector', null, [])
             ))
             .addClassConstructorParameterDecorator(new ConstructorParameterDecorator(
                 'Inject',
                 [new DecoratorArguments(ts.SyntaxKind.StringLiteral, `'$q'`)],
                 `@Inject('$q')`, 346, 359,
-                new ConstructorParameter('$q', 'any')
+                new ConstructorParameter('$q', 'any', [ts.SyntaxKind.PrivateKeyword])
             ))
             .addClassConstructorParameterDecorator(new ConstructorParameterDecorator(
                 'Inject',
                 [new DecoratorArguments(ts.SyntaxKind.Identifier, 'TestService')],
                 `@Inject(TestService)`, 400, 420,
-                new ConstructorParameter('testService', 'TestService')
+                new ConstructorParameter('testService', 'TestService', [ts.SyntaxKind.PrivateKeyword])
             ))
+            .addClassMethod(new ClassMethodData('$onInit', 482, 514))
+            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575))
             .build()
         );
     });

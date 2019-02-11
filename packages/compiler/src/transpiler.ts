@@ -3,6 +3,7 @@ import {CompilerUnit} from "./public_api";
 import {createProgram} from "./transpiler/util";
 import {createTranspilerOptions} from "./transpiler/options";
 import {
+    ClassMethodData,
     ConstructorParameterDecorator,
     DecoratorData,
     PropertyDecoratorData,
@@ -34,6 +35,10 @@ export class TSTranspiler {
                         decorator, exp.arguments, property, source
                     ));
                 })
+            });
+
+            node.members.filter(ts.isMethodDeclaration).forEach(method => {
+                this.dataBuilder.addClassMethod(ClassMethodData.fromTsSource(method, source));
             });
 
             const ctr: ts.ConstructorDeclaration = node.members.find(ts.isConstructorDeclaration);
