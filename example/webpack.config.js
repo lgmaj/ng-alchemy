@@ -5,6 +5,7 @@ const loader = require('../loader');
 const ANGULAR_TS_DECORATORS_INTEGRATION = loader.optionsBuilder()
     .addStaticInjectTransformer()
     .addTransformer(new compiler.Ng1InjectableTransformer())
+    .addTransformer(new compiler.Ng1ComponentTransformer())
     .build('angular-ts-decorators-integration');
 
 module.exports = {

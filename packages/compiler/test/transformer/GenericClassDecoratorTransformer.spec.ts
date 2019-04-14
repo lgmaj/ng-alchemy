@@ -1,5 +1,5 @@
 import {compile, crateCompilationUnit, crateCompilerConfig, update} from "../../src";
-import {GenericClassDecoratorTransformer} from "../../src/transformer/GenericClassDecoratorTransformer";
+import {GenericClassDecoratorTransformer} from "../../src/transformer";
 
 const generic = new GenericClassDecoratorTransformer(
     d => d.name === 'Injectable' && d.args.length === 0,

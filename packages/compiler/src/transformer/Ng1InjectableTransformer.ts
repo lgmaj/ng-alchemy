@@ -13,5 +13,4 @@ export class Ng1InjectableTransformer implements CompilerUnitTransformer {
         );
         return result;
     }
-
 }

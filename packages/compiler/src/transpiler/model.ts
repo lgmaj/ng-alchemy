@@ -1,6 +1,13 @@
 import * as ts from "typescript";
 import {first, getHeritageClauses, getIdentifier, getModifiers} from "./util";
 
+export class TextRange {
+    constructor(readonly text: string,
+                readonly start: number,
+                readonly end: number) {
+    }
+}
+
 export class PropertyData {
     constructor(readonly name: string,
                 readonly type: string) {
@@ -31,23 +38,83 @@ export class ConstructorParameter {
     }
 }
 
-export class DecoratorArguments {
-    constructor(readonly kind: ts.SyntaxKind,
-                readonly text: string) {
+export class DecoratorArguments extends TextRange {
+    constructor(
+        readonly kind: ts.SyntaxKind,
+        text: string,
+        start: number,
+        end: number,
+        readonly value: Value) {
+        super(text, start, end)
     }
 
     static fromTsSource(arg: any, source: ts.SourceFile): DecoratorArguments {
         return new DecoratorArguments(
             arg.kind,
-            arg.getText(source)
+            arg.getText(source),
+            arg.getStart(source),
+            arg.getEnd(),
+            valueFactory(arg, source)
         );
     }
 }
 
-export class TextRange {
-    constructor(readonly text: string,
-                readonly start: number,
-                readonly end: number) {
+function valueFactory(arg: any, source: ts.SourceFile): Value {
+    switch (arg.kind) {
+        case ts.SyntaxKind.ObjectLiteralExpression:
+            return ValueObject.fromTsSource(arg, source);
+        default:
+            return null;
+    }
+}
+
+export interface Value {
+}
+
+export class ValueObject extends TextRange implements Value {
+
+    constructor(
+        start: number,
+        end: number,
+        readonly properties: Array<ValueObjectProperty>) {
+        super(null, start, end)
+    }
+
+    static fromTsSource(arg: any, source: ts.SourceFile): ValueObject {
+        return new ValueObject(
+            arg.pos,
+            arg.end,
+            arg.properties ? arg.properties.map(property => {
+                return ValueObjectProperty.fromTsSource(property, source)
+            }) : []);
+    }
+}
+
+export class ValueObjectProperty extends TextRange {
+    constructor(text: string,
+                start: number,
+                end: number,
+                readonly name: TextRange,
+                readonly initializer: TextRange) {
+        super(text, start, end);
+    }
+
+    static fromTsSource(property: any, source: ts.SourceFile): ValueObjectProperty {
+        return new ValueObjectProperty(
+            null,
+            property.getStart(source),
+            property.getEnd(),
+            new TextRange(
+                property.name.getText(source),
+                property.name.pos,
+                property.name.end
+            ),
+            new TextRange(
+                property.initializer.getText(source),
+                property.initializer.pos,
+                property.initializer.end
+            )
+        );
     }
 }
 

@@ -29,5 +29,4 @@ export class Ng1InjectTransformer implements CompilerUnitTransformer {
                 }));
         return result;
     }
-
 }
