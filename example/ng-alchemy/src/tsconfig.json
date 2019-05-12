@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "outDir": "../dist/tsc",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "paths": {
+      "ng-alchemy/core": ["../../../dist/core"],
+      "ng-alchemy/platform-browser-dynamic": ["../../../dist/platform-browser-dynamic"]
+    }
+  },
+  "include": [
+    "./*.ts"
+  ]
+}

@@ -13,7 +13,7 @@ const registry: { [key: string]: Array<CompilerUnitTransformer> } = {};
 
 export default function loader(source): string {
     return compile(
-        crateCompilationUnit(this.resourcePath, source),
+        crateCompilationUnit(this.resourcePath, source, this.context),
         crateCompilerConfigFromArray(getTransformers(this.query))
     )
 }

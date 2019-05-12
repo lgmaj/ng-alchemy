@@ -1,14 +1,14 @@
-const path = require('path');
-const compiler = require('../compiler');
-const loader = require('../loader');
+import * as path from 'path';
+import {optionsBuilder} from "../../dist/loader";
+import {Ng1ComponentTransformer, Ng1InjectableTransformer} from "../../dist/compiler";
 
-const ANGULAR_TS_DECORATORS_INTEGRATION = loader.optionsBuilder()
+const ANGULAR_TS_DECORATORS_INTEGRATION = optionsBuilder()
     .addStaticInjectTransformer()
-    .addTransformer(new compiler.Ng1InjectableTransformer())
-    .addTransformer(new compiler.Ng1ComponentTransformer())
+    .addTransformer(new Ng1InjectableTransformer())
+    .addTransformer(new Ng1ComponentTransformer())
     .build('angular-ts-decorators-integration');
 
-module.exports = {
+export default {
     entry: path.resolve(__dirname, './src/index.ts'),
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -26,7 +26,7 @@ module.exports = {
             use: [
                 {loader: "ts-loader"},
                 {
-                    loader: path.resolve(__dirname, '../loader.js'),
+                    loader: path.resolve(__dirname, '../../loader.js'),
                     options: {
                         transformers: ANGULAR_TS_DECORATORS_INTEGRATION
                     }

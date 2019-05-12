@@ -21,7 +21,7 @@ export class TSTranspiler {
             .filter(source => !source.isDeclarationFile)
             .forEach(source => ts.forEachChild(source, node => this.visitor(node, source)));
 
-        return this.dataBuilder.withInput(compilerUnit.content).build();
+        return this.dataBuilder.withPath(compilerUnit.path).withInput(compilerUnit.content).build();
     }
 
     private visitor(node: ts.Node, source: ts.SourceFile): void {

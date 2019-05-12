@@ -4,23 +4,27 @@
   "main": "loader.js",
   "scripts": {
     "build": "tsc -p packages/tsconfig.json",
-    "build-example": "webpack --config example/webpack.config.js",
+    "build-example-angular-ts-decorators": "webpack --config example/angular-ts-decorators/webpack.config.ts",
+    "build-example-ng-alchemy": "webpack --config example/ng-alchemy/webpack.config.ts",
     "test": "karma start karma.config.js"
   },
   "devDependencies": {
     "@types/angular": "^1.6.24",
     "@types/jasmine": "3.3.0",
+    "@types/node": "10.14.5",
     "typescript": "3.1.6",
     "karma": "3.1.1",
     "karma-jasmine": "2.0.1",
     "karma-chrome-launcher": "2.2.0",
     "karma-webpack": "3.0.5",
     "karma-mocha-reporter": "2.2.5",
-    "webpack": "4.26.1",
-    "webpack-cli": "3.1.2",
+    "webpack": "4.31.0",
+    "webpack-cli": "3.3.2",
     "ts-loader": "5.3.0",
     "angular-ts-decorators": "3.7.7",
-    "angular": "1.5.8"
+    "angular": "1.5.8",
+    "ts-node": "8.1.0",
+    "mock-fs": "^4.5.0"
   },
   "repository": {
     "type": "git",

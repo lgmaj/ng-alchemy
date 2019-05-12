@@ -1,7 +1,7 @@
 import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
 import {PropertyDecoratorData, TSTranspilerClassData, TSTranspilerData, ValueObject} from "../transpiler/model";
-import {addOrUpdateObjectProperty, isObjectLiteralExpression} from "../transpiler/util";
 import {remove} from "../transformation";
+import {addOrUpdateObjectPropertyTransformation, isObjectLiteralExpression} from "../object";
 
 export class Ng1ComponentTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -22,7 +22,7 @@ export class Ng1ComponentTransformer implements CompilerUnitTransformer {
     }
 
     private setBindings(value: ValueObject, bindings: Array<string>): SourceTransformation {
-        return bindings.length > 0 ? addOrUpdateObjectProperty(value, 'bindings', `{${bindings.join(',')}}`) : null;
+        return bindings.length > 0 ? addOrUpdateObjectPropertyTransformation(value, 'bindings', `{${bindings.join(',')}}`) : null;
     }
 
     private getBindings(c: TSTranspilerClassData, result: Array<SourceTransformation>): Array<string> {

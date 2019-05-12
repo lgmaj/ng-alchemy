@@ -2,6 +2,7 @@ import {TSTranspilerData} from "./transpiler/model";
 
 export interface CompilerUnit {
     name: string;
+    path: string;
     content: string;
 }
 

@@ -1,7 +1,7 @@
 import {CompilerConfig, CompilerUnit, CompilerUnitTransformer} from "./public_api";
 
-export function crateCompilationUnit(name: string, content: string): CompilerUnit {
-    return {name, content}
+export function crateCompilationUnit(name: string, content: string, path: string = null): CompilerUnit {
+    return {name, path, content}
 }
 
 export function crateCompilerConfig(...transformer: Array<CompilerUnitTransformer>): CompilerConfig {

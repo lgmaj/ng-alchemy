@@ -7,7 +7,7 @@ const alchemy = angularjs => angular;
 
 example integration with **angular-ts-decorators**
 
-webpack.config.js
+webpack.config.ts
 
 ```typescript
 import {optionsBuilder} from 'ng-alchemy/loader';

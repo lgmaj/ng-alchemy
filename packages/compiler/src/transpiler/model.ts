@@ -99,6 +99,16 @@ export class ValueObjectProperty extends TextRange {
         super(text, start, end);
     }
 
+    static fomNameInitializer(name: string, initializer: string): ValueObjectProperty {
+        return new ValueObjectProperty(
+            null,
+            -1,
+            -1,
+            new TextRange(name, -1, -1),
+            new TextRange(initializer, -1, -1)
+        );
+    }
+
     static fromTsSource(property: any, source: ts.SourceFile): ValueObjectProperty {
         return new ValueObjectProperty(
             null,
@@ -235,16 +245,22 @@ export class TSTranspilerClassData {
 
 export interface TSTranspilerData {
     input: string;
+    path: string;
     classList: Array<TSTranspilerClassData>;
 }
 
 export class TSTranspilerDataBuilder {
 
-    private data: TSTranspilerData = {input: '', classList: []};
+    private data: TSTranspilerData = {input: '', path: null, classList: []};
     private current: TSTranspilerClassData = null;
 
     withInput(value: string): TSTranspilerDataBuilder {
         this.data.input = value;
+        return this;
+    }
+
+    withPath(value: string): TSTranspilerDataBuilder {
+        this.data.path = value;
         return this;
     }
 

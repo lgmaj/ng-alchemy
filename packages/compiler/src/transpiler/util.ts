@@ -1,9 +1,7 @@
 import * as ts from "typescript";
-import {CompilerUnit, SourceTransformation} from "../public_api";
+import {CompilerUnit} from "../public_api";
 import {FileSystemMock} from "./FileSystemMock";
 import {CompilerHostMock} from "./CompilerHostMock";
-import {ValueObject, ValueObjectProperty} from "./model";
-import {add, update} from "../transformation";
 
 export function createProgram(compilerUnit: CompilerUnit, options: ts.CompilerOptions): ts.Program {
     const fileSystem = new FileSystemMock();
@@ -30,24 +28,4 @@ export function getHeritageClauses(node: ts.ClassDeclaration, kind: ts.SyntaxKin
 
 export function first<T>(values: Array<T>): T | undefined {
     return values && values.length ? values[0] : undefined;
-}
-
-export function addOrUpdateObjectProperty(o: ValueObject, name: string, value: string): SourceTransformation {
-    if (objectHasProperty(o, name)) {
-        return update(`${name}:${value}`, objectGetProperty(o, name));
-    }
-
-    return add(o.properties.length > 0 ? `,${name}:${value}` : `${name}:${value}`, o.end - 1);
-}
-
-export function objectHasProperty(o: ValueObject, name: string): boolean {
-    return !!objectGetProperty(o, name);
-}
-
-export function objectGetProperty(o: ValueObject, name: string): ValueObjectProperty {
-    return o.properties.find(p => p.name.text === name)
-}
-
-export function isObjectLiteralExpression(node: { kind: number }): boolean {
-    return node && node.kind === ts.SyntaxKind.ObjectLiteralExpression;
 }
