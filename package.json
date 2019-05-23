@@ -6,7 +6,9 @@
     "build": "tsc -p packages/tsconfig.json",
     "build-example-angular-ts-decorators": "webpack --config example/angular-ts-decorators/webpack.config.ts",
     "build-example-ng-alchemy": "webpack --config example/ng-alchemy/webpack.config.ts",
-    "test": "karma start karma.config.js"
+    "test": "karma start karma.config.js",
+    "test-jasmine": "jasmine --reporter=jasmine-console-reporter \"dist/**/test/**/*spec.js\"",
+    "build-and-test": "npm run build && npm run test-jasmine"
   },
   "devDependencies": {
     "@types/angular": "^1.6.24",
@@ -24,7 +26,9 @@
     "angular-ts-decorators": "3.7.7",
     "angular": "1.5.8",
     "ts-node": "8.1.0",
-    "mock-fs": "^4.5.0"
+    "mock-fs": "^4.5.0",
+    "jasmine": "3.4.0",
+    "jasmine-console-reporter": "3.1.0"
   },
   "repository": {
     "type": "git",

@@ -39,5 +39,5 @@ describe('compiler spec', () => {
 });
 
 function crateCompilationUnitMock(content ?: string): CompilerUnit {
-    return crateCompilationUnit(name || 'Foo.ts', content || 'export class Foo {}');
+    return crateCompilationUnit('Foo.ts', content || 'export class Foo {}');
 }
