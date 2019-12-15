@@ -19,6 +19,15 @@ export class SourceTransformation {
     }
 }
 
-export interface CompilerConfig {
-    transformers: Array<CompilerUnitTransformer>;
+export class CompilerConfig {
+    constructor(public transformers: Array<CompilerUnitTransformer> = [],
+                public templateLoader: boolean = false,
+                public templateTranspiler: boolean = false) {
+    }
+}
+
+export interface CompilerFileSystem {
+    resolvePath(catalog: string, file: string): string;
+
+    readFile(value: string): string;
 }

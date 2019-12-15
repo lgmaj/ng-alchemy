@@ -1,40 +1,43 @@
 import {
     compile,
+    CompilerConfig,
+    CompilerFileSystem,
     CompilerUnitTransformer,
     crateCompilationUnit,
-    crateCompilerConfigFromArray,
     Ng1StaticInjectTransformer,
     SourceTransformation
 } from '../compiler';
 import {GenericClassDecoratorTransformer} from "../compiler/src/transformer";
 import {DecoratorData, TSTranspilerClassData} from "../compiler/src/transpiler/model";
+import {registerCompilerFileSystem} from "../compiler/src/filesystem";
+import {loader} from "webpack";
 
-const registry: { [key: string]: Array<CompilerUnitTransformer> } = {};
+const registry: { [key: string]: CompilerConfig } = {};
 
-export default function loader(source): string {
+export default function loader(this: loader.LoaderContext, source: string): string {
     return compile(
         crateCompilationUnit(this.resourcePath, source, this.context),
-        crateCompilerConfigFromArray(getTransformers(this.query))
+        getCompilerConfig(this.query)
     )
 }
 
-export function registerTransformers(name: string, transformer: Array<CompilerUnitTransformer>): void {
-    registry[name] = transformer;
+export function registerTransformers(name: string, options: CompilerConfig): void {
+    registry[name] = options;
 }
 
-function getTransformers(query): Array<CompilerUnitTransformer> {
+function getCompilerConfig(query: any): CompilerConfig {
     if (query && query.transformers && registry[query.transformers]) {
         return registry[query.transformers];
     }
 
-    return [new Ng1StaticInjectTransformer()];
+    return new CompilerConfig([new Ng1StaticInjectTransformer()]);
 }
 
 class OptionsBuilder {
-    private transformers: Array<CompilerUnitTransformer> = [];
+    private config: CompilerConfig = new CompilerConfig();
 
     addTransformer(transformer: CompilerUnitTransformer): OptionsBuilder {
-        this.transformers.push(transformer);
+        this.config.transformers.push(transformer);
         return this;
     }
 
@@ -48,9 +51,20 @@ class OptionsBuilder {
         return this.addTransformer(new GenericClassDecoratorTransformer(predicate, factory));
     }
 
+    addTemplateTranspiler(): OptionsBuilder {
+        this.config.templateTranspiler = true;
+        return this;
+    }
+
+    addTemplateLoader(fileSystem: CompilerFileSystem): OptionsBuilder {
+        registerCompilerFileSystem(fileSystem);
+        this.config.templateLoader = true;
+        return this;
+    }
+
     build(name: string): string {
-        if (this.transformers.length > 0) {
-            registerTransformers(name, this.transformers);
+        if (this.config.transformers.length > 0) {
+            registerTransformers(name, this.config);
         }
         return name;
     }

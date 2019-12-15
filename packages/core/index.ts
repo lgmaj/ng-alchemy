@@ -18,4 +18,4 @@ export declare function Component(options: {
     template?: string;
     templateUrl?: string;
     bindings?: any;
-});
+}): ClassDecorator;

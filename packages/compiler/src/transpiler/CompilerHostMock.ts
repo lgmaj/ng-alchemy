@@ -5,22 +5,22 @@ export class CompilerHostMock {
     constructor(private fileSystem: FileSystemMock) {
     }
 
-    getSourceFile(fileName) {
+    getSourceFile(fileName: string) {
         return this.fileSystem.find(fileName);
     }
 
-    writeFile(name, text) {
+    writeFile(name: string, text: string): void {
     }
 
     getDefaultLibFileName() {
         return "lib.d.ts";
     }
 
-    useCaseSensitiveFileNames() {
+    useCaseSensitiveFileNames(): boolean {
         return false;
     }
 
-    getCanonicalFileName(fileName) {
+    getCanonicalFileName(fileName: string): string {
         return fileName;
     }
 
@@ -32,19 +32,19 @@ export class CompilerHostMock {
         return '\n';
     }
 
-    fileExists(fileName) {
+    fileExists(fileName: string): boolean {
         return !!this.getSourceFile(fileName);
     }
 
-    readFile() {
+    readFile(): string {
         return "";
     }
 
-    directoryExists() {
+    directoryExists(): boolean {
         return true;
     }
 
-    getDirectories() {
+    getDirectories(): Array<any> {
         return [];
     }
 }

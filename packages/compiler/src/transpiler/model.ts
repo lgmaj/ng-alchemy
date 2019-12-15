@@ -84,7 +84,7 @@ export class ValueObject extends TextRange implements Value {
         return new ValueObject(
             arg.pos,
             arg.end,
-            arg.properties ? arg.properties.map(property => {
+            arg.properties ? arg.properties.map((property : any) => {
                 return ValueObjectProperty.fromTsSource(property, source)
             }) : []);
     }

@@ -2,6 +2,8 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
+    "strict": true,
+    "strictNullChecks": false,
     "declaration": true,
     "lib": [
       "es5",
