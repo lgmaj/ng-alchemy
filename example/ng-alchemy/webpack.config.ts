@@ -1,6 +1,7 @@
 import * as path from 'path';
 import {optionsBuilder} from "../../dist/loader";
 import {ComponentTransformer, InjectableTransformer, NgModuleTransformer} from "../../dist/compiler";
+import {NodeCompilerFileSystem} from "../../node-compiler-file-system";
 
 export default {
     entry: path.resolve(__dirname, './src/index.ts'),
@@ -30,6 +31,7 @@ export default {
                             .addTransformer(new ComponentTransformer())
                             .addTransformer(new InjectableTransformer())
                             .addTransformer(new NgModuleTransformer())
+                            .addTemplateLoader(new NodeCompilerFileSystem())
                             .build('ng-alchemy')
                     }
                 }

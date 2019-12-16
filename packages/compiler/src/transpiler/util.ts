@@ -1,7 +1,7 @@
 import * as ts from "typescript";
 import {CompilerUnit} from "../public_api";
-import {FileSystemMock} from "./FileSystemMock";
-import {CompilerHostMock} from "./CompilerHostMock";
+import {FileSystemMock} from "./file-system-mock";
+import {CompilerHostMock} from "./compiler-host-mock";
 
 export function createProgram(compilerUnit: CompilerUnit, options: ts.CompilerOptions): ts.Program {
     const fileSystem = new FileSystemMock();

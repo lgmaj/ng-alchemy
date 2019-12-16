@@ -1,4 +1,4 @@
-import {FileSystemMock} from "./FileSystemMock";
+import {FileSystemMock} from "./file-system-mock";
 
 export class CompilerHostMock {
 

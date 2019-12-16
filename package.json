@@ -8,7 +8,8 @@
     "build-example-ng-alchemy": "webpack --config example/ng-alchemy/webpack.config.ts",
     "test": "karma start karma.config.js",
     "test-jasmine": "jasmine --reporter=jasmine-console-reporter \"dist/**/test/**/*spec.js\"",
-    "build-and-test": "npm run build && npm run test-jasmine"
+    "build-and-test": "npm run build && npm run test-jasmine",
+    "build-all-and-test": "npm run build && npm run test-jasmine && npm run build-example-angular-ts-decorators && npm run build-example-ng-alchemy"
   },
   "devDependencies": {
     "@types/angular": "^1.6.24",
