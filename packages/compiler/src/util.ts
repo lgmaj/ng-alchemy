@@ -1,4 +1,4 @@
-import {CompilerConfig, CompilerUnit, CompilerUnitTransformer} from "./public_api";
+import {CompilerConfig, CompilerTemplateConfig, CompilerUnit, CompilerUnitTransformer} from "./public_api";
 
 export function crateCompilationUnit(name: string, content: string, path: string = null): CompilerUnit {
     return {name, path, content}
@@ -9,7 +9,7 @@ export function crateCompilerConfig(...transformer: Array<CompilerUnitTransforme
 }
 
 export function crateCompilerConfigFromArray(transformers: Array<CompilerUnitTransformer>, templateLoader: boolean = false, templateTranspiler: boolean = false): CompilerConfig {
-    return new CompilerConfig(transformers, templateLoader, templateTranspiler);
+    return new CompilerConfig(transformers, new CompilerTemplateConfig(templateLoader, templateTranspiler));
 }
 
 export function replaceRange(input: string, start: number, end: number, text: string): string {

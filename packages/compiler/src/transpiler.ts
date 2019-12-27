@@ -6,22 +6,28 @@ import {
     ClassMethodData,
     ConstructorParameterDecorator,
     DecoratorData,
-    PropertyDecoratorData, TSTranspilerClassData,
+    PropertyDecoratorData,
+    TSTranspilerClassData,
     TSTranspilerData,
-    TSTranspilerDataBuilder
+    TSTranspilerDataBuilder,
+    TSTranspilerDataConfig
 } from "./transpiler/model";
 
 export class TSTranspiler {
 
     private dataBuilder: TSTranspilerDataBuilder = new TSTranspilerDataBuilder();
 
-    transpile(compilerUnit: CompilerUnit): TSTranspilerData {
+    transpile(compilerUnit: CompilerUnit, config ?: TSTranspilerDataConfig): TSTranspilerData {
         createProgram(compilerUnit, createTranspilerOptions())
             .getSourceFiles()
             .filter(source => !source.isDeclarationFile)
             .forEach(source => ts.forEachChild(source, node => this.visitor(node, source)));
 
-        return this.dataBuilder.withPath(compilerUnit.path).withInput(compilerUnit.content).build();
+        return this.dataBuilder
+            .withPath(compilerUnit.path)
+            .withInput(compilerUnit.content)
+            .withConfig(config || new TSTranspilerDataConfig())
+            .build();
     }
 
     private visitor(node: ts.Node, source: ts.SourceFile): void {

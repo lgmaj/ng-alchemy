@@ -4,17 +4,12 @@ import {
     PropertyDecoratorData,
     TSTranspilerClassData,
     TSTranspilerData,
+    TSTranspilerDataConfig,
     ValueObject
 } from "../transpiler/model";
 import {add, remove} from "../transformation";
-import {loadHtmlTemplate} from '../template';
-import {
-    addOrUpdateObjectProperty,
-    isObjectLiteralExpression,
-    objectGetProperty,
-    objectHasProperty, removeObjectProperty,
-    valeObjectToString
-} from "../object";
+import {compileTemplate} from '../template';
+import {addOrUpdateObjectProperty, isObjectLiteralExpression, valeObjectToString} from "../object";
 
 export class ComponentTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -28,7 +23,7 @@ export class ComponentTransformer implements CompilerUnitTransformer {
                         });
                         result.push(
                             remove(d),
-                            add(`static ngComponentDef:any = ${this.createDef(d.args[0].value as ValueObject, c, data.path)};`, c.end - 1)
+                            add(this.ngComponentDef(this.createDef(d.args[0].value as ValueObject, c, data.path, data.config)), c.end - 1)
                         );
                     }
                 )
@@ -36,21 +31,18 @@ export class ComponentTransformer implements CompilerUnitTransformer {
         return result;
     }
 
-    private createDef(v: ValueObject, c: TSTranspilerClassData, path: string): string {
+    private createDef(v: ValueObject, c: TSTranspilerClassData, path: string, config: TSTranspilerDataConfig): string {
         return valeObjectToString(
             this.loadTemplate(
                 this.setController(
                     this.setBindings(v, this.getBindings(c)),
                     c),
-                path)
+                path, config)
         );
     }
 
-    private loadTemplate(v: ValueObject, filePath: string): ValueObject {
-        if (objectHasProperty(v, 'templateUrl')) {
-            return addOrUpdateObjectProperty(removeObjectProperty(v, 'templateUrl'), 'template', '`' + loadHtmlTemplate(filePath, objectGetProperty(v, 'templateUrl').initializer.text) + '`');
-        }
-        return v;
+    private loadTemplate(vo: ValueObject, filePath: string, config: TSTranspilerDataConfig): ValueObject {
+        return compileTemplate(vo, filePath, config);
     }
 
     private setBindings(value: ValueObject, bindings: Array<string>): ValueObject {
@@ -73,5 +65,9 @@ export class ComponentTransformer implements CompilerUnitTransformer {
 
     private isComponentDecorator(d: DecoratorData): boolean {
         return d.name === 'Component' && d.args.length === 1 && isObjectLiteralExpression(d.args[0])
+    }
+
+    private ngComponentDef(def: string): string {
+        return `static ngComponentDef:any = ${def};`
     }
 }

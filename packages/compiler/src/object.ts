@@ -44,6 +44,14 @@ export function objectGetProperty(o: ValueObject, name: string): ValueObjectProp
     return o.properties.find(p => p.name.text === name)
 }
 
+export function objectGetPropertyText(o: ValueObject, name: string): string {
+    return objectGetProperty(o, name).initializer.text;
+}
+
+export function objectGetPropertyTextOrDefault(o: ValueObject, name: string, defaultValue: string): string {
+    return objectHasProperty(o, name) ? objectGetPropertyText(o, name) : defaultValue;
+}
+
 export function isObjectLiteralExpression(node: { kind: number }): boolean {
     return node && node.kind === ts.SyntaxKind.ObjectLiteralExpression;
 }

@@ -12,6 +12,7 @@ import {
     TextRange,
     TSTranspilerClassData,
     TSTranspilerDataBuilder,
+    TSTranspilerDataConfig,
     ValueObject,
     ValueObjectProperty
 } from "../src/transpiler/model";
@@ -139,12 +140,13 @@ describe('transpiler spec', () => {
                 603, 687
             ))
             .addClassMethod(new ClassMethodData('$onDestroy', 783, 818))
+            .withConfig(new TSTranspilerDataConfig())
             .build()
         );
     });
 });
 
 function crateCompilationUnitMock(content ?: string): CompilerUnit {
-    return crateCompilationUnit( 'Foo.ts', content || 'export class Foo {}');
+    return crateCompilationUnit('Foo.ts', content || 'export class Foo {}');
 }
 

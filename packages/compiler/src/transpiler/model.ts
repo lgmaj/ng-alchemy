@@ -1,5 +1,6 @@
 import * as ts from "typescript";
 import {first, getHeritageClauses, getIdentifier, getModifiers} from "./util";
+import {CompilerTemplateConfig} from "../public_api";
 
 export class TextRange {
     constructor(readonly text: string,
@@ -84,7 +85,7 @@ export class ValueObject extends TextRange implements Value {
         return new ValueObject(
             arg.pos,
             arg.end,
-            arg.properties ? arg.properties.map((property : any) => {
+            arg.properties ? arg.properties.map((property: any) => {
                 return ValueObjectProperty.fromTsSource(property, source)
             }) : []);
     }
@@ -247,11 +248,22 @@ export interface TSTranspilerData {
     input: string;
     path: string;
     classList: Array<TSTranspilerClassData>;
+    config: TSTranspilerDataConfig;
+}
+
+export class TSTranspilerDataConfig {
+    constructor(public readonly template: CompilerTemplateConfig = new CompilerTemplateConfig()) {
+    }
 }
 
 export class TSTranspilerDataBuilder {
 
-    private data: TSTranspilerData = {input: '', path: null, classList: []};
+    private data: TSTranspilerData = {
+        input: '',
+        path: null,
+        classList: [],
+        config: {template: new CompilerTemplateConfig()}
+    };
     private current: TSTranspilerClassData = null;
 
     withInput(value: string): TSTranspilerDataBuilder {
@@ -261,6 +273,11 @@ export class TSTranspilerDataBuilder {
 
     withPath(value: string): TSTranspilerDataBuilder {
         this.data.path = value;
+        return this;
+    }
+
+    withConfig(value: TSTranspilerDataConfig): TSTranspilerDataBuilder {
+        this.data.config = value;
         return this;
     }
 

@@ -1,7 +1,7 @@
 import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
 import {DecoratorData, TSTranspilerClassData, TSTranspilerData, ValueObject} from "../transpiler/model";
 import {add, remove} from "../transformation";
-import {objectGetProperty, objectHasProperty} from "../object";
+import {objectGetPropertyText, objectHasProperty} from "../object";
 
 export class InjectableTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -20,7 +20,7 @@ export class InjectableTransformer implements CompilerUnitTransformer {
 
     private getName(c: TSTranspilerClassData, d: DecoratorData): string {
         if (d.args.length === 1 && objectHasProperty(d.args[0].value as ValueObject, 'name')) {
-            return objectGetProperty(d.args[0].value as ValueObject, 'name').initializer.text
+            return objectGetPropertyText(d.args[0].value as ValueObject, 'name')
         }
         return `'${c.name}'`;
     }

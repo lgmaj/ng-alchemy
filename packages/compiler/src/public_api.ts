@@ -21,8 +21,14 @@ export class SourceTransformation {
 
 export class CompilerConfig {
     constructor(public transformers: Array<CompilerUnitTransformer> = [],
-                public templateLoader: boolean = false,
-                public templateTranspiler: boolean = false) {
+                public template: CompilerTemplateConfig = new CompilerTemplateConfig()) {
+    }
+}
+
+export class CompilerTemplateConfig {
+    constructor(public readonly load: boolean = false,
+                public readonly transpile: boolean = false,
+                public readonly optimize: boolean = false) {
     }
 }
 

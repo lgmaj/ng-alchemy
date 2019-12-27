@@ -2,6 +2,7 @@ import {
     compile,
     CompilerConfig,
     CompilerFileSystem,
+    CompilerTemplateConfig,
     CompilerUnitTransformer,
     crateCompilationUnit,
     Ng1StaticInjectTransformer,
@@ -51,14 +52,25 @@ class OptionsBuilder {
         return this.addTransformer(new GenericClassDecoratorTransformer(predicate, factory));
     }
 
-    addTemplateTranspiler(): OptionsBuilder {
-        this.config.templateTranspiler = true;
+    withTemplateTranspiler(): OptionsBuilder {
+        this.config.template = new CompilerTemplateConfig(
+            this.config.template.load, true, this.config.template.optimize
+        );
         return this;
     }
 
-    addTemplateLoader(fileSystem: CompilerFileSystem): OptionsBuilder {
+    withTemplateLoader(fileSystem: CompilerFileSystem): OptionsBuilder {
         registerCompilerFileSystem(fileSystem);
-        this.config.templateLoader = true;
+        this.config.template = new CompilerTemplateConfig(
+            true, this.config.template.transpile, this.config.template.optimize
+        );
+        return this;
+    }
+
+    withOptimizedTemplate(): OptionsBuilder {
+        this.config.template = new CompilerTemplateConfig(
+            this.config.template.load, this.config.template.transpile, true
+        );
         return this;
     }
 

@@ -1,1 +1,1 @@
-export * from './dist/compiler/index';
+export * from './dist/compiler';
