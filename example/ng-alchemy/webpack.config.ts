@@ -32,6 +32,7 @@ export default {
                             .addTransformer(new InjectableTransformer())
                             .addTransformer(new NgModuleTransformer())
                             .withTemplateLoader(new NodeCompilerFileSystem())
+                            .withTemplateTranspiler()
                             .withOptimizedTemplate()
                             .build('ng-alchemy')
                     }

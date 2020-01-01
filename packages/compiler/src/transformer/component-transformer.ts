@@ -4,12 +4,12 @@ import {
     PropertyDecoratorData,
     TSTranspilerClassData,
     TSTranspilerData,
-    TSTranspilerDataConfig,
     ValueObject
 } from "../transpiler/model";
 import {add, remove} from "../transformation";
 import {compileTemplate} from '../template';
 import {addOrUpdateObjectProperty, isObjectLiteralExpression, valeObjectToString} from "../object";
+import {TemplateTranspilerContext} from "../template/template-transpiler-context";
 
 export class ComponentTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
@@ -23,7 +23,7 @@ export class ComponentTransformer implements CompilerUnitTransformer {
                         });
                         result.push(
                             remove(d),
-                            add(this.ngComponentDef(this.createDef(d.args[0].value as ValueObject, c, data.path, data.config)), c.end - 1)
+                            add(this.ngComponentDef(this.createDef(d.args[0].value as ValueObject, c, data)), c.end - 1)
                         );
                     }
                 )
@@ -31,18 +31,16 @@ export class ComponentTransformer implements CompilerUnitTransformer {
         return result;
     }
 
-    private createDef(v: ValueObject, c: TSTranspilerClassData, path: string, config: TSTranspilerDataConfig): string {
+    private createDef(v: ValueObject, c: TSTranspilerClassData, data: TSTranspilerData): string {
         return valeObjectToString(
             this.loadTemplate(
-                this.setController(
-                    this.setBindings(v, this.getBindings(c)),
-                    c),
-                path, config)
+                this.setController(this.setBindings(v, this.getBindings(c)), c),
+                TemplateTranspilerContext.create(c, data))
         );
     }
 
-    private loadTemplate(vo: ValueObject, filePath: string, config: TSTranspilerDataConfig): ValueObject {
-        return compileTemplate(vo, filePath, config);
+    private loadTemplate(config: ValueObject, context: TemplateTranspilerContext): ValueObject {
+        return compileTemplate(config, context);
     }
 
     private setBindings(value: ValueObject, bindings: Array<string>): ValueObject {
