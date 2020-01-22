@@ -3,6 +3,7 @@ import {CompilerUnit, crateCompilationUnit} from "../src";
 import {TSTranspiler} from "../src/transpiler";
 import {
     ClassMethodData,
+    ClassPropertyData,
     ConstructorParameter,
     ConstructorParameterDecorator,
     DecoratorArguments,
@@ -112,6 +113,8 @@ describe('transpiler spec', () => {
                 `@Inject(TestService)`, 400, 420,
                 new ConstructorParameter('testService', 'TestService', [ts.SyntaxKind.PrivateKeyword])
             ))
+            .addClassProperty(new ClassPropertyData('foo', 171, 205))
+            .addClassProperty(new ClassPropertyData('bar', 231, 263))
             .addClassMethod(new ClassMethodData('$onInit', 482, 514))
             .addClassMethod(new ClassMethodData('$onDestroy', 540, 575))
             .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController']))

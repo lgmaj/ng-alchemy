@@ -204,6 +204,21 @@ export class ConstructorParameterDecorator extends TextRange {
     }
 }
 
+export class ClassPropertyData {
+    constructor(readonly name: string,
+                readonly start: number,
+                readonly end: number) {
+    }
+
+    static fromTsSource(property: ts.PropertyDeclaration, source: ts.SourceFile) : ClassPropertyData {
+        return new ClassPropertyData(
+            getIdentifier(property.name),
+            property.getStart(source),
+            property.getEnd()
+        );
+    }
+}
+
 export class ClassMethodData {
     constructor(readonly name: string,
                 readonly start: number,
@@ -225,6 +240,7 @@ export class TSTranspilerClassData {
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
 
     readonly methods: Array<ClassMethodData> = [];
+    readonly properties: Array<ClassMethodData> = [];
 
     constructor(readonly name: string,
                 readonly start: number,
@@ -304,6 +320,11 @@ export class TSTranspilerDataBuilder {
 
     addClassMethod(method: ClassMethodData): TSTranspilerDataBuilder {
         this.current.methods.push(method);
+        return this;
+    }
+
+    addClassProperty(property: ClassPropertyData): TSTranspilerDataBuilder {
+        this.current.properties.push(property);
         return this;
     }
 

@@ -1,35 +1,65 @@
+import {TemplateExpressionResolver} from "./template-expression-resolver";
+
 export class TemplateTranspiler {
-    transpile(template: string): string {
-        return TRANSFORMERS.reduce((acc, transformer) => transformer.transform(acc), template);
+    transpile(template: string, resolver: TemplateExpressionResolver): string {
+        return TRANSFORMERS.reduce((acc, transformer) => transformer.transform(acc, resolver), template);
     }
 }
 
 interface ITemplateTransformer {
-    transform(value: string): string;
+    transform(value: string, resolver: TemplateExpressionResolver): string;
 }
 
 class AttributeTransformer implements ITemplateTransformer {
-    transform(value: string): string {
-        return value.replace(/(\[[a-zA-Z0-9_]*]=\"[a-zA-Z0-9._]*\")/gm, this.replaceAttribute.bind(this));
-    }
-
-    private replaceAttribute(attribute: string): string {
-        return attribute.replace(/(\[[a-zA-Z0-9_]*])/gm, this.replaceAttributeName.bind(this))
-    }
-
-    private replaceAttributeName(name: string): string {
-        return camelToKebab(this.removeAndReplaceStartOfAttribute(name))
-    }
-
-    private removeAndReplaceStartOfAttribute(value: string): string {
-        return value.split('[').join('').split(']').join('');
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(/\[([a-zA-Z0-9_]*)]="(.*?)"/gm, (substring, name, value) =>
+            `${camelToKebab(name)}="${resolver.resolve(value)}"`
+        );
     }
 }
 
 class NgForTransformer implements ITemplateTransformer {
-    transform(value: string): string {
-        // /(\*ngFor)="let\s*([a-zA-Z0-1]*)\s*of\s*([a-zA-Z0-1]*)"/
-        return value.replace(/\*ngFor/gm, 'ng-repeat');
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(
+            /\*ngFor="\s*let\s*(.*?)\s*of\s*(.*?)\s*"/gm,
+            (substring, itr, collection) => `ng-repeat="${itr} in ${resolver.resolve(collection)}"`
+        );
+    }
+}
+
+class NgIfTransformer implements ITemplateTransformer {
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(
+            /\*ngIf="(.*?)"/gm,
+            (substring, condition) => `ng-if="${resolver.resolve(condition)}"`
+        );
+    }
+}
+
+class NgClickTransformer implements ITemplateTransformer {
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(
+            /\(click\)="(.*?)"/gm,
+            (substring, expression) => `ng-click="${resolver.resolve(expression)}"`
+        );
+    }
+}
+
+class NgSubmitTransformer implements ITemplateTransformer {
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(
+            /\(submit\)="(.*?)"/gm,
+            (substring, expression) => `ng-submit="${resolver.resolve(expression)}"`
+        );
+    }
+}
+
+class NgModelTransformer implements ITemplateTransformer {
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(
+            /\[\(ngModel\)]="(.*?)"/gm,
+            (substring, expression) => `ng-model="${resolver.resolve(expression)}"`
+        );
     }
 }
 
@@ -47,6 +77,15 @@ class GenericTransformer implements ITemplateTransformer {
     }
 }
 
+class ExpressionTransformer implements ITemplateTransformer {
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        const interpolationsRegExp: RegExp = /{{(.*?)}}/gm;
+        return value.replace(interpolationsRegExp, (interpolation, content) => {
+            return `{{${resolver.resolve(content)}}}`;
+        });
+    }
+}
+
 interface GenericTransformerItem {
     searchValue: any;
     replaceValue: string;
@@ -55,9 +94,11 @@ interface GenericTransformerItem {
 const TRANSFORMERS: Array<ITemplateTransformer> = [
     new AttributeTransformer(),
     new NgForTransformer(),
-    new GenericTransformer()
-        .add(/\*ngIf/gm, 'ng-if')
-        .add(/\(click\)/gm, 'ng-click')
+    new ExpressionTransformer(),
+    new NgIfTransformer(),
+    new NgClickTransformer(),
+    new NgSubmitTransformer(),
+    new NgModelTransformer()
 ];
 
 function camelToKebab(value: string): string {

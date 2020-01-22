@@ -3,7 +3,7 @@ import {CompilerUnit} from "./public_api";
 import {createProgram} from "./transpiler/util";
 import {createTranspilerOptions} from "./transpiler/options";
 import {
-    ClassMethodData,
+    ClassMethodData, ClassPropertyData,
     ConstructorParameterDecorator,
     DecoratorData,
     PropertyDecoratorData,
@@ -45,6 +45,10 @@ export class TSTranspiler {
 
             node.members.filter(ts.isMethodDeclaration).forEach(method => {
                 this.dataBuilder.addClassMethod(ClassMethodData.fromTsSource(method, source));
+            });
+
+            node.members.filter(ts.isPropertyDeclaration).forEach(property => {
+                this.dataBuilder.addClassProperty(ClassPropertyData.fromTsSource(property, source));
             });
 
             const ctr: ts.ConstructorDeclaration = node.members.find(ts.isConstructorDeclaration);
