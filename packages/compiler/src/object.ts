@@ -12,19 +12,19 @@ export function removeObjectProperty(o: ValueObject, name: string): ValueObject 
     return new ValueObject(o.start, o.end, o.properties.filter(p => p.name.text !== name));
 }
 
-export function addOrUpdateObjectPropertys(o: ValueObject, properties: Array<{ name: string, value: string }>): ValueObject {
+export function addOrUpdateObjectProperties(o: ValueObject, properties: Array<{ name: string, value: string, kind: ts.SyntaxKind }>): ValueObject {
     return new ValueObject(o.start, o.end,
         o.properties
             .filter(p => !properties.find(v => v.name === p.name.text))
-            .concat(properties.map(p => ValueObjectProperty.fomNameInitializer(p.name, p.value)))
+            .concat(properties.map(p => ValueObjectProperty.fromNameInitializer(p.name, p.value, p.kind)))
     );
 }
 
-export function addOrUpdateObjectProperty(o: ValueObject, name: string, value: string): ValueObject {
+export function addOrUpdateObjectProperty(o: ValueObject, name: string, value: string, kind: ts.SyntaxKind = ts.SyntaxKind.Unknown): ValueObject {
     return new ValueObject(o.start, o.end,
         o.properties
             .filter(p => p.name.text !== name)
-            .concat([ValueObjectProperty.fomNameInitializer(name, value)])
+            .concat([ValueObjectProperty.fromNameInitializer(name, value, kind)])
     );
 }
 
@@ -37,7 +37,11 @@ export function addOrUpdateObjectPropertyTransformation(o: ValueObject, name: st
 }
 
 export function objectHasProperty(o: ValueObject, name: string): boolean {
-    return !!objectGetProperty(o, name);
+    return o.properties.some(p => p.name.text === name);
+}
+
+export function objectHasPropertyKind(o: ValueObject, name: string, kind: ts.SyntaxKind): boolean {
+    return o.properties.some(p => p.name.text === name && p.kind === kind);
 }
 
 export function objectGetProperty(o: ValueObject, name: string): ValueObjectProperty {

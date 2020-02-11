@@ -96,17 +96,19 @@ export class ValueObjectProperty extends TextRange {
                 start: number,
                 end: number,
                 readonly name: TextRange,
-                readonly initializer: TextRange) {
+                readonly initializer: TextRange,
+                readonly kind: ts.SyntaxKind) {
         super(text, start, end);
     }
 
-    static fomNameInitializer(name: string, initializer: string): ValueObjectProperty {
+    static fromNameInitializer(name: string, initializer: string, kind: ts.SyntaxKind): ValueObjectProperty {
         return new ValueObjectProperty(
             null,
             -1,
             -1,
             new TextRange(name, -1, -1),
-            new TextRange(initializer, -1, -1)
+            new TextRange(initializer, -1, -1),
+            kind
         );
     }
 
@@ -124,7 +126,8 @@ export class ValueObjectProperty extends TextRange {
                 property.initializer.getText(source),
                 property.initializer.pos,
                 property.initializer.end
-            )
+            ),
+            property.initializer.kind
         );
     }
 }

@@ -1,3 +1,4 @@
+import * as ts from "typescript";
 import {ComponentTranspiler} from "./component-transpiler";
 import {ValueObject} from "../transpiler/model";
 import {TemplateTranspilerContext} from "./template-transpiler-context";
@@ -10,7 +11,8 @@ export class TemplateOptimiseComponentTranspiler implements ComponentTranspiler 
             return addOrUpdateObjectProperty(
                 config,
                 ComponentProperties.TEMPLATE,
-                removeWhitespaces(objectGetPropertyText(config, ComponentProperties.TEMPLATE))
+                removeWhitespaces(objectGetPropertyText(config, ComponentProperties.TEMPLATE)),
+                ts.SyntaxKind.StringLiteral
             )
         }
         return config;

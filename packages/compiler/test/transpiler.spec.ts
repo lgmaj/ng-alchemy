@@ -74,7 +74,8 @@ describe('transpiler spec', () => {
                                 new ValueObjectProperty(
                                     null, 90, 117,
                                     new TextRange('selector', 90, 98),
-                                    new TextRange(`'ng-alchemy-test'`, 99, 117)
+                                    new TextRange(`'ng-alchemy-test'`, 99, 117),
+                                    ts.SyntaxKind.StringLiteral
                                 )
                             ])
                     )
@@ -129,12 +130,14 @@ describe('transpiler spec', () => {
                             new ValueObjectProperty(
                                 null, 615, 651,
                                 new TextRange('selector', 615, 623),
-                                new TextRange(`'ng-alchemy-extended-test'`, 624, 651)
+                                new TextRange(`'ng-alchemy-extended-test'`, 624, 651),
+                                ts.SyntaxKind.StringLiteral
                             ),
                             new ValueObjectProperty(
                                 null, 653, 685,
                                 new TextRange('template', 652, 661),
-                                new TextRange(`'new better component'`, 662, 685)
+                                new TextRange(`'new better component'`, 662, 685),
+                                ts.SyntaxKind.StringLiteral
                             )]
                         )
                     )
