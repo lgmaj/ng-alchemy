@@ -5,11 +5,12 @@ import {
     CompilerTemplateConfig,
     CompilerUnitTransformer,
     crateCompilationUnit,
+    DecoratorData,
     Ng1StaticInjectTransformer,
-    SourceTransformation
+    SourceTransformation,
+    TSTranspilerClassData
 } from '../compiler';
 import {GenericClassDecoratorTransformer} from "../compiler/src/transformer";
-import {DecoratorData, TSTranspilerClassData} from "../compiler/src/transpiler/model";
 import {registerCompilerFileSystem} from "../compiler/src/filesystem";
 import {loader} from "webpack";
 

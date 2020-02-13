@@ -1,11 +1,13 @@
-import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
 import {
+    CompilerUnitTransformer,
     DecoratorData,
     PropertyDecoratorData,
+    SourceTransformation,
+    SupportedDecorators,
     TSTranspilerClassData,
     TSTranspilerData,
     ValueObject
-} from "../transpiler/model";
+} from "../public_api";
 import {add, remove} from "../transformation";
 import {compileTemplate} from '../template';
 import {addOrUpdateObjectProperty, isObjectLiteralExpression, valeObjectToString} from "../object";
@@ -18,9 +20,11 @@ export class ComponentTransformer implements CompilerUnitTransformer {
             c.decorator
                 .filter(d => this.isComponentDecorator(d))
                 .forEach(d => {
-                        c.propertyDecorator.filter(d2 => d2.name === 'Input' || d2.name === 'Output').forEach(d2 => {
-                            result.push(remove(d2));
-                        });
+                        c.propertyDecorator
+                            .filter(d2 => d2.name === SupportedDecorators.Input || d2.name === SupportedDecorators.Output)
+                            .forEach(d2 => {
+                                result.push(remove(d2));
+                            });
                         result.push(
                             remove(d),
                             add(this.ngComponentDef(this.createDef(d.args[0].value as ValueObject, c, data)), c.end - 1)
@@ -53,16 +57,16 @@ export class ComponentTransformer implements CompilerUnitTransformer {
 
     private getBindings(c: TSTranspilerClassData): Array<string> {
         return c.propertyDecorator
-            .filter(p => p.name === 'Input' || p.name === 'Output')
+            .filter(p => p.name === SupportedDecorators.Input || p.name === SupportedDecorators.Output)
             .map(p => `${p.propert.name}:${this.getBind(p)}`);
     }
 
     private getBind(p: PropertyDecoratorData): string {
-        return p.args.length === 1 ? p.args[0].text : p.name === 'Input' ? `'<'` : `'&'`;
+        return p.args.length === 1 ? p.args[0].text : p.name === SupportedDecorators.Input ? `'<'` : `'&'`;
     }
 
     private isComponentDecorator(d: DecoratorData): boolean {
-        return d.name === 'Component' && d.args.length === 1 && isObjectLiteralExpression(d.args[0])
+        return d.name === SupportedDecorators.Component && d.args.length === 1 && isObjectLiteralExpression(d.args[0])
     }
 
     private ngComponentDef(def: string): string {

@@ -2,11 +2,10 @@ import {Todo} from "./Todo";
 import {TodoListService} from "./todo-list.service";
 import {Inject} from "./externals";
 import {Component} from "angular-ts-decorators";
-import {TODO_LIST_COMPONENT_TEMPLATE} from "./todo-list.component.html";
 
 @Component({
     selector: 'todoListComponent',
-    template: TODO_LIST_COMPONENT_TEMPLATE
+    templateUrl: './todo-list.component.html'
 })
 export class TodoListComponent {
 

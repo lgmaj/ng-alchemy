@@ -1,5 +1,22 @@
 import {TSTranspilerData} from "./transpiler/model";
 
+export * from './transpiler/public_api';
+
+export enum SupportedDecorators {
+    Component = 'Component',
+    Injectable = 'Injectable',
+    NgModule = 'NgModule',
+    Input = 'Input',
+    Output = 'Output',
+    Pipe = 'Pipe'
+}
+
+export enum SupportedComponentProperties {
+    bindings = 'bindings',
+    template = 'template',
+    templateUrl = 'templateUrl'
+}
+
 export interface CompilerUnit {
     name: string;
     path: string;

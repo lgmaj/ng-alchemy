@@ -1,0 +1,14 @@
+<h2>Todo</h2>
+<div>
+    <span>{{remaining()}} of {{todos.length}} remaining</span>
+    [ <a href="" (click)="archive()">archive</a> ]
+    <ul class="unstyled">
+        <li *ngFor="let todo of todos">
+            <todo-list-item [done]="todo.done" [text]="todo.text"></todo-list-item>
+        </li>
+    </ul>
+    <form (submit)="addTodo()">
+        <input type="text" [(ngModel)]="todoText" size="30" placeholder="add new todo here">
+        <input class="btn-primary" type="submit" value="add">
+    </form>
+</div>

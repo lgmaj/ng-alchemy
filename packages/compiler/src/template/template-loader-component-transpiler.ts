@@ -1,18 +1,17 @@
 import * as ts from "typescript";
 import {ComponentTranspiler} from "./component-transpiler";
-import {ValueObject} from "../transpiler/model";
 import {TemplateTranspilerContext} from "./template-transpiler-context";
 import {addOrUpdateObjectProperty, objectGetPropertyText, objectHasProperty, removeObjectProperty} from "../object";
-import {ComponentProperties} from "./component-properties";
 import {readFile, resolvePath} from "../filesystem";
+import {SupportedComponentProperties, ValueObject} from "../public_api";
 
 export class TemplateLoaderComponentTranspiler implements ComponentTranspiler {
     transpile(config: ValueObject, context: TemplateTranspilerContext): ValueObject {
-        if (context.config.template.load && objectHasProperty(config, ComponentProperties.TEMPLATE_URL)) {
+        if (context.config.template.load && objectHasProperty(config, SupportedComponentProperties.templateUrl)) {
             return addOrUpdateObjectProperty(
-                removeObjectProperty(config, ComponentProperties.TEMPLATE_URL),
-                ComponentProperties.TEMPLATE,
-                '`' + loadHtmlTemplate(context.path, objectGetPropertyText(config, ComponentProperties.TEMPLATE_URL)) + '`',
+                removeObjectProperty(config, SupportedComponentProperties.templateUrl),
+                SupportedComponentProperties.template,
+                '`' + loadHtmlTemplate(context.path, objectGetPropertyText(config, SupportedComponentProperties.templateUrl)) + '`',
                 ts.SyntaxKind.StringLiteral
             );
         }
