@@ -10,7 +10,7 @@ describe('template-expression-parser', () => {
     });
 
     it('should parse chain', () => {
-        expect(parse('a.bb.ccc.ddd')).toEqual(['a', '.', 'bb', '.', 'ccc', '.', 'ddd']);
+        expect(parse('a.bb.ccc.ddd')).toEqual(['a']); // we only resolve $ctrl for first node in chain
     });
 
     it('should parse function call', () => {
@@ -25,5 +25,5 @@ describe('template-expression-parser', () => {
 });
 
 function parse(expresion: string): Array<string> {
-    return new TemplateExpressionParser().parse(expresion);
+    return new TemplateExpressionParser().parse(expresion).map(ast => ast.token.text);
 }

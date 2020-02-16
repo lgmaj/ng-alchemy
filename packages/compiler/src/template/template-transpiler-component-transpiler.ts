@@ -6,6 +6,7 @@ import {addOrUpdateObjectProperty, objectGetPropertyText, objectHasPropertyKind}
 import {TemplateTranspiler} from "./template-transpiler";
 import {CtrlTemplateExpressionResolver} from "./ctrl-template-expression-resolver";
 import {CtrlTemplateTranspilerHost} from "./ctrl-template-transpiler-host";
+import {CtrlTemplateAstVisitor} from "./ctrl-template-ast-visitor";
 
 export class TemplateTranspilerComponentTranspiler implements ComponentTranspiler {
     transpile(config: ValueObject, context: TemplateTranspilerContext): ValueObject {
@@ -15,7 +16,9 @@ export class TemplateTranspilerComponentTranspiler implements ComponentTranspile
                 SupportedComponentProperties.template,
                 new TemplateTranspiler().transpile(
                     objectGetPropertyText(config, SupportedComponentProperties.template),
-                    new CtrlTemplateExpressionResolver(new CtrlTemplateTranspilerHost(context.clazz))
+                    new CtrlTemplateExpressionResolver(
+                        new CtrlTemplateAstVisitor(new CtrlTemplateTranspilerHost(context.clazz))
+                    )
                 ),
                 ts.SyntaxKind.StringLiteral
             )
