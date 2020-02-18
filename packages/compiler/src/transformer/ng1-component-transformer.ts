@@ -42,7 +42,7 @@ export class Ng1ComponentTransformer implements CompilerUnitTransformer {
             });
     }
 
-    private getBind(p: PropertyDecoratorData): string {
+    protected getBind(p: PropertyDecoratorData): string {
         return p.args.length === 1 ? p.args[0].text : p.name === SupportedDecorators.Input ? `'<'` : `'&'`;
     }
 
