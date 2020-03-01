@@ -23,4 +23,16 @@ describe('Ng1ComponentTransformerTest', () => {
 
         expect(result).toEqual(output);
     });
+
+    it('should work for many @Component decorators on one class', () => {
+        const input: string = `@Component({selector:'test-one'}) @Component({selector:'test-two'}) class Foo { @Input() input : string; @Output() output : string;}`;
+        const output: string = `@Component({selector:'test-one',bindings:{input:'<',output:'&'}}) @Component({selector:'test-two',bindings:{input:'<',output:'&'}}) class Foo {  input : string;  output : string;}`;
+
+        const result = compile(
+            crateCompilationUnit('Foo.ts', input),
+            crateCompilerConfig(new Ng1ComponentTransformer())
+        );
+
+        expect(result).toEqual(output);
+    })
 });

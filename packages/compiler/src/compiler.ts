@@ -39,6 +39,7 @@ class CompilerContext {
     execute(): string {
         return this.transformations
             .sort((a, b) => b.start - a.start)
+            .filter((value: SourceTransformation, index: number, collection: Array<SourceTransformation>) => index > 0 ? !value.equal(collection[index - 1]) : true)
             .reduce(
                 (input, transform) => replaceRange(input, transform.start, transform.end, transform.text),
                 this.data.input

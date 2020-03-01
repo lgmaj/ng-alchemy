@@ -29,7 +29,7 @@ describe('compiler spec', () => {
                 const token = 'Foo';
                 const start = content.input.indexOf(token);
                 const end = start + token.length;
-                return [{start, end, text: 'Bar'}];
+                return [new SourceTransformation(start, end, 'Bar')];
             }
         };
         const result = compile(crateCompilationUnitMock(), crateCompilerConfig(transformer));

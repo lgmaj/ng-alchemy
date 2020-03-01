@@ -34,6 +34,12 @@ export class SourceTransformation {
         readonly text: string,
     ) {
     }
+
+    equal(value: SourceTransformation): boolean {
+        return this.start === value.start &&
+            this.end === value.end &&
+            this.text === value.text;
+    }
 }
 
 export class CompilerConfig {
