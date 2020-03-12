@@ -10,7 +10,7 @@ export class TemplateOptimiseComponentTranspiler implements ComponentTranspiler 
             return addOrUpdateObjectProperty(
                 config,
                 SupportedComponentProperties.template,
-                removeWhitespaces(objectGetPropertyText(config, SupportedComponentProperties.template)),
+                removeHtmlWhitespaces(objectGetPropertyText(config, SupportedComponentProperties.template)),
                 ts.SyntaxKind.StringLiteral
             )
         }
@@ -18,6 +18,10 @@ export class TemplateOptimiseComponentTranspiler implements ComponentTranspiler 
     }
 }
 
-function removeWhitespaces(html: string): string {
-    return html.replace(/\r?\n\s*/g, '');
+export function removeHtmlWhitespaces(html: string): string {
+    return html
+        .replace(/\n/g, '')
+        .replace(/\>\s+\</g, '><')
+        .replace(/\s+/g, ' ')
+        .trim();
 }

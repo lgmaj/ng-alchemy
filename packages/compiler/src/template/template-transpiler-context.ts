@@ -1,4 +1,4 @@
-import {TSTranspilerClassData, TSTranspilerData, TSTranspilerDataConfig, ValueObject} from "../transpiler/model";
+import {TSTranspilerClassData, TSTranspilerData, TSTranspilerDataConfig} from "../transpiler/model";
 
 export class TemplateTranspilerContext {
     constructor(readonly clazz: TSTranspilerClassData,
