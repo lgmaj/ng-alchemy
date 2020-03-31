@@ -9,8 +9,14 @@ describe('template-transpiler', () => {
         expect(transpile('<div *ngIf="true"></div>')).toEqual('<div ng-if="true"></div>');
     });
 
-    it('should transpile (click)', () => {
-        expect(transpile('<div (click)="onClick()"></div>')).toEqual('<div ng-click="onClick()"></div>');
+    it('should transpile ng events', () => {
+        expect(transpile('<div (click)="onClick($event)"></div>')).toEqual('<div ng-click="onClick($event)"></div>');
+        expect(transpile('<div (submit)="onSubmit($event)"></div>')).toEqual('<div ng-submit="onSubmit($event)"></div>');
+        expect(transpile('<div (change)="onChange($event)"></div>')).toEqual('<div ng-change="onChange($event)"></div>');
+    });
+
+    it('should transpile custom events', () => {
+        expect(transpile('<div (fooBar)="onFooBar($event)"></div>')).toEqual('<div foo-bar="onFooBar($event)"></div>');
     });
 
     it('should transpile [(ngModel)]', () => {

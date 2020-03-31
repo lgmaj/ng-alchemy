@@ -18,6 +18,22 @@ class AttributeTransformer implements ITemplateTransformer {
     }
 }
 
+class NgEventTransformer implements ITemplateTransformer {
+    transform(value: string, resolver: TemplateExpressionResolver): string {
+        return value.replace(/\(([a-zA-Z0-9_]*)\)="(.*?)"/gm, (substring, event, handler) =>
+            `${toNgEventName(event)}="${resolver.resolve(handler)}"`
+        );
+    }
+}
+
+function toNgEventName(event: string): string {
+    return isNgEvent(event) ? `ng-${event}` : camelToKebab(event)
+}
+
+function isNgEvent(event: string): boolean {
+    return ['change', 'click', 'submit'].indexOf(event) > -1
+}
+
 class NgForTransformer implements ITemplateTransformer {
     transform(value: string, resolver: TemplateExpressionResolver): string {
         return value.replace(
@@ -32,24 +48,6 @@ class NgIfTransformer implements ITemplateTransformer {
         return value.replace(
             /\*ngIf="(.*?)"/gm,
             (substring, condition) => `ng-if="${resolver.resolve(condition)}"`
-        );
-    }
-}
-
-class NgClickTransformer implements ITemplateTransformer {
-    transform(value: string, resolver: TemplateExpressionResolver): string {
-        return value.replace(
-            /\(click\)="(.*?)"/gm,
-            (substring, expression) => `ng-click="${resolver.resolve(expression)}"`
-        );
-    }
-}
-
-class NgSubmitTransformer implements ITemplateTransformer {
-    transform(value: string, resolver: TemplateExpressionResolver): string {
-        return value.replace(
-            /\(submit\)="(.*?)"/gm,
-            (substring, expression) => `ng-submit="${resolver.resolve(expression)}"`
         );
     }
 }
@@ -96,8 +94,7 @@ const TRANSFORMERS: Array<ITemplateTransformer> = [
     new NgForTransformer(),
     new ExpressionTransformer(),
     new NgIfTransformer(),
-    new NgClickTransformer(),
-    new NgSubmitTransformer(),
+    new NgEventTransformer(),
     new NgModelTransformer()
 ];
 
