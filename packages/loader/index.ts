@@ -7,9 +7,9 @@ import {
     crateCompilationUnit,
     DecoratorData,
     Ng1StaticInjectTransformer,
-    SourceTransformation,
+    SourceTransformation, TranspilerApi,
     TSTranspilerClassData
-} from '../compiler';
+} from "../compiler";
 import {GenericClassDecoratorTransformer} from "../compiler/src/transformer";
 import {registerCompilerFileSystem} from "../compiler/src/filesystem";
 import {loader} from "webpack";
@@ -19,7 +19,8 @@ const registry: { [key: string]: CompilerConfig } = {};
 export default function loader(this: loader.LoaderContext, source: string): string {
     return compile(
         crateCompilationUnit(this.resourcePath, source, this.context),
-        getCompilerConfig(this.query)
+        getCompilerConfig(this.query),
+        new TranspilerApi(this.addDependency)
     )
 }
 

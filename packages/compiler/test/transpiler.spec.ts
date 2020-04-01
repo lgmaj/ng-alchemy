@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import {CompilerUnit, crateCompilationUnit} from "../src";
+import {CompilerUnit, crateCompilationUnit, TranspilerApi} from "../src";
 import {TSTranspiler} from "../src/transpiler";
 import {
     ClassMethodData,
@@ -54,10 +54,11 @@ describe('transpiler spec', () => {
         }
         `;
 
-        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file));
+        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file), TranspilerApi.empty);
 
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
+            .withApi(TranspilerApi.empty)
             .addClass(new TSTranspilerClassData('TestService', 0, 60, undefined, []))
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
             .addClass(new TSTranspilerClassData('TestComponent', 60, 585, undefined, []))

@@ -1,4 +1,4 @@
-import {compile, crateCompilationUnit, crateCompilerConfig, InjectableTransformer} from "../../src";
+import {compile, crateCompilationUnit, crateCompilerConfig, InjectableTransformer, TranspilerApi} from "../../src";
 
 describe('InjectableTransformerTest', () => {
     it('should add name from type', function () {
@@ -7,7 +7,8 @@ describe('InjectableTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new InjectableTransformer())
+            crateCompilerConfig(new InjectableTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -19,7 +20,8 @@ describe('InjectableTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new InjectableTransformer())
+            crateCompilerConfig(new InjectableTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);

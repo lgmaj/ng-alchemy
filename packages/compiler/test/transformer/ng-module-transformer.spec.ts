@@ -1,4 +1,4 @@
-import {compile, crateCompilationUnit, crateCompilerConfig, NgModuleTransformer} from "../../src";
+import {compile, crateCompilationUnit, crateCompilerConfig, NgModuleTransformer, TranspilerApi} from "../../src";
 
 describe('NgModuleTransformerTest', () => {
     it('should add static ngModule def and remove decorator', () => {
@@ -7,7 +7,8 @@ describe('NgModuleTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new NgModuleTransformer())
+            crateCompilerConfig(new NgModuleTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
