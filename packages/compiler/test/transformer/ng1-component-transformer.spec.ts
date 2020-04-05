@@ -1,4 +1,4 @@
-import {compile, crateCompilationUnit, crateCompilerConfig, Ng1ComponentTransformer} from "../../src";
+import {compile, crateCompilationUnit, crateCompilerConfig, Ng1ComponentTransformer, TranspilerApi} from "../../src";
 
 describe('Ng1ComponentTransformerTest', () => {
     it('should remove @Input and @Output and add bindings to component definition', () => {
@@ -7,7 +7,8 @@ describe('Ng1ComponentTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1ComponentTransformer())
+            crateCompilerConfig(new Ng1ComponentTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -18,7 +19,8 @@ describe('Ng1ComponentTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1ComponentTransformer())
+            crateCompilerConfig(new Ng1ComponentTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -30,7 +32,8 @@ describe('Ng1ComponentTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1ComponentTransformer())
+            crateCompilerConfig(new Ng1ComponentTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);

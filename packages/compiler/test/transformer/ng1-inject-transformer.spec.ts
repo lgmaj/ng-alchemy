@@ -1,5 +1,4 @@
-import {compile} from "../../src";
-import {crateCompilationUnit, crateCompilerConfig} from "../../src";
+import {compile, crateCompilationUnit, crateCompilerConfig, TranspilerApi} from "../../src";
 import {Ng1InjectTransformer} from "../../src/transformer";
 
 describe('Ng1InjectTransformerTest', () => {
@@ -9,7 +8,8 @@ describe('Ng1InjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectTransformer())
+            crateCompilerConfig(new Ng1InjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -41,7 +41,8 @@ describe('Ng1InjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectTransformer())
+            crateCompilerConfig(new Ng1InjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -73,7 +74,8 @@ describe('Ng1InjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectTransformer())
+            crateCompilerConfig(new Ng1InjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -93,7 +95,8 @@ describe('Ng1InjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectTransformer())
+            crateCompilerConfig(new Ng1InjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -113,7 +116,8 @@ describe('Ng1InjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectTransformer())
+            crateCompilerConfig(new Ng1InjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -133,7 +137,8 @@ describe('Ng1InjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1InjectTransformer())
+            crateCompilerConfig(new Ng1InjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);

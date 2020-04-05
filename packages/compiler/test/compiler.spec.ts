@@ -4,21 +4,21 @@ import {
     CompilerUnitTransformer,
     crateCompilationUnit,
     crateCompilerConfig,
-    SourceTransformation
+    SourceTransformation, TranspilerApi,
+    TSTranspilerData
 } from "../src";
-import {TSTranspilerData} from "../src/transpiler/model";
 
 describe('compiler spec', () => {
     it('should throw error if compiler config is null', () => {
-        expect(() => compile(crateCompilationUnitMock(), null)).toThrowError('[ng-alchemy][error] config can\'t be null!');
+        expect(() => compile(crateCompilationUnitMock(), null, TranspilerApi.empty)).toThrowError('[ng-alchemy][error] config can\'t be null!');
     });
 
     it('should throw error if compiler compilation unit is null', () => {
-        expect(() => compile(null, null)).toThrowError('[ng-alchemy][error] compilation unit can\'t be null!');
+        expect(() => compile(null, null, TranspilerApi.empty)).toThrowError('[ng-alchemy][error] compilation unit can\'t be null!');
     });
 
     it('should return same output if list of transformers are empty', () => {
-        const result = compile(crateCompilationUnitMock(), crateCompilerConfig());
+        const result = compile(crateCompilationUnitMock(), crateCompilerConfig(), TranspilerApi.empty);
 
         expect(result).toEqual(crateCompilationUnitMock().content);
     });
@@ -32,7 +32,7 @@ describe('compiler spec', () => {
                 return [new SourceTransformation(start, end, 'Bar')];
             }
         };
-        const result = compile(crateCompilationUnitMock(), crateCompilerConfig(transformer));
+        const result = compile(crateCompilationUnitMock(), crateCompilerConfig(transformer), TranspilerApi.empty);
 
         expect(result).toEqual('export class Bar {}');
     })

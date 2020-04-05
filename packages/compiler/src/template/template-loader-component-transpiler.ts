@@ -8,10 +8,12 @@ import {SupportedComponentProperties, ValueObject} from "../public_api";
 export class TemplateLoaderComponentTranspiler implements ComponentTranspiler {
     transpile(config: ValueObject, context: TemplateTranspilerContext): ValueObject {
         if (context.config.template.load && objectHasProperty(config, SupportedComponentProperties.templateUrl)) {
+            const templateFileName: string = objectGetPropertyText(config, SupportedComponentProperties.templateUrl);
+            context.api.addDependency(resolveTemplatePath(context.path, templateFileName));
             return addOrUpdateObjectProperty(
                 removeObjectProperty(config, SupportedComponentProperties.templateUrl),
                 SupportedComponentProperties.template,
-                '`' + loadHtmlTemplate(context.path, objectGetPropertyText(config, SupportedComponentProperties.templateUrl)) + '`',
+                '`' + loadHtmlTemplate(context.path, templateFileName) + '`',
                 ts.SyntaxKind.StringLiteral
             );
         }

@@ -1,9 +1,10 @@
 import * as ts from 'typescript';
-import {CompilerUnit} from "./public_api";
+import {CompilerUnit, TranspilerApi} from "./public_api";
 import {createProgram} from "./transpiler/util";
 import {createTranspilerOptions} from "./transpiler/options";
 import {
-    ClassMethodData, ClassPropertyData,
+    ClassMethodData,
+    ClassPropertyData,
     ConstructorParameterDecorator,
     DecoratorData,
     PropertyDecoratorData,
@@ -17,7 +18,7 @@ export class TSTranspiler {
 
     private dataBuilder: TSTranspilerDataBuilder = new TSTranspilerDataBuilder();
 
-    transpile(compilerUnit: CompilerUnit, config ?: TSTranspilerDataConfig): TSTranspilerData {
+    transpile(compilerUnit: CompilerUnit, api: TranspilerApi, config ?: TSTranspilerDataConfig): TSTranspilerData {
         createProgram(compilerUnit, createTranspilerOptions())
             .getSourceFiles()
             .filter(source => !source.isDeclarationFile)
@@ -27,6 +28,7 @@ export class TSTranspiler {
             .withPath(compilerUnit.path)
             .withInput(compilerUnit.content)
             .withConfig(config || new TSTranspilerDataConfig())
+            .withApi(api)
             .build();
     }
 

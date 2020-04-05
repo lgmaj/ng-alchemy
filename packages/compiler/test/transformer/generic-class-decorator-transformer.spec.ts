@@ -1,4 +1,4 @@
-import {compile, crateCompilationUnit, crateCompilerConfig, update} from "../../src";
+import {compile, crateCompilationUnit, crateCompilerConfig, TranspilerApi, update} from '../../src';
 import {GenericClassDecoratorTransformer} from "../../src/transformer";
 
 const generic = new GenericClassDecoratorTransformer(
@@ -13,7 +13,8 @@ describe('GenericClassDecoratorTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(generic)
+            crateCompilerConfig(generic),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -25,7 +26,8 @@ describe('GenericClassDecoratorTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(generic)
+            crateCompilerConfig(generic),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -37,7 +39,8 @@ describe('GenericClassDecoratorTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(generic)
+            crateCompilerConfig(generic),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);

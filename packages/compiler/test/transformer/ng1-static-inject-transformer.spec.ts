@@ -1,5 +1,4 @@
-import {compile} from "../../src";
-import {crateCompilationUnit, crateCompilerConfig} from "../../src";
+import {compile, crateCompilationUnit, crateCompilerConfig, TranspilerApi} from "../../src";
 import {Ng1StaticInjectTransformer} from "../../src/transformer";
 
 describe('Ng1StaticInjectTransformerTest', () => {
@@ -25,7 +24,8 @@ describe('Ng1StaticInjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1StaticInjectTransformer())
+            crateCompilerConfig(new Ng1StaticInjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);
@@ -57,7 +57,8 @@ describe('Ng1StaticInjectTransformerTest', () => {
 
         const result = compile(
             crateCompilationUnit('Foo.ts', input),
-            crateCompilerConfig(new Ng1StaticInjectTransformer())
+            crateCompilerConfig(new Ng1StaticInjectTransformer()),
+            TranspilerApi.empty
         );
 
         expect(result).toEqual(output);

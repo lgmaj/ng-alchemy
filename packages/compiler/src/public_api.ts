@@ -1,6 +1,6 @@
 import {TSTranspilerData} from "./transpiler/model";
 
-export * from './transpiler/public_api';
+export * from "./transpiler/public_api";
 
 export enum SupportedDecorators {
     Component = 'Component',
@@ -21,6 +21,7 @@ export interface CompilerUnit {
     name: string;
     path: string;
     content: string;
+    templateUrlPath?: string;
 }
 
 export interface CompilerUnitTransformer {

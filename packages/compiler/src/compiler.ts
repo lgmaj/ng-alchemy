@@ -1,14 +1,14 @@
-import {CompilerConfig, CompilerUnit, CompilerUnitTransformer, SourceTransformation} from "./public_api";
+import {CompilerConfig, CompilerUnit, CompilerUnitTransformer, SourceTransformation, TranspilerApi} from "./public_api";
 import {TSTranspiler} from "./transpiler";
 import {replaceRange} from "./util";
 import {TSTranspilerData, TSTranspilerDataConfig} from "./transpiler/model";
 
-export function compile(unit: CompilerUnit, config: CompilerConfig): string {
+export function compile(unit: CompilerUnit, config: CompilerConfig, api: TranspilerApi): string {
     assertCompilerInput(unit, config);
     return config.transformers
         .reduce(
             (context, transformer) => context.transform(transformer),
-            CompilerContext.create(unit, new TSTranspilerDataConfig(config.template))
+            CompilerContext.create(unit, api, new TSTranspilerDataConfig(config.template))
         )
         .execute();
 }
@@ -46,7 +46,7 @@ class CompilerContext {
             );
     }
 
-    static create(unit: CompilerUnit, config: TSTranspilerDataConfig): CompilerContext {
-        return new CompilerContext(new TSTranspiler().transpile(unit, config));
+    static create(unit: CompilerUnit, api: TranspilerApi, config: TSTranspilerDataConfig): CompilerContext {
+        return new CompilerContext(new TSTranspiler().transpile(unit, api, config));
     }
 }

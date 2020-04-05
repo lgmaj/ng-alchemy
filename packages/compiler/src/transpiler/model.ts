@@ -213,7 +213,7 @@ export class ClassPropertyData {
                 readonly end: number) {
     }
 
-    static fromTsSource(property: ts.PropertyDeclaration, source: ts.SourceFile) : ClassPropertyData {
+    static fromTsSource(property: ts.PropertyDeclaration, source: ts.SourceFile): ClassPropertyData {
         return new ClassPropertyData(
             getIdentifier(property.name),
             property.getStart(source),
@@ -266,8 +266,20 @@ export class TSTranspilerClassData {
 export interface TSTranspilerData {
     input: string;
     path: string;
+    api: TranspilerApi;
     classList: Array<TSTranspilerClassData>;
     config: TSTranspilerDataConfig;
+}
+
+export class TranspilerApi {
+    constructor(public addDependency: (file: string) => void) {
+    }
+
+    static empty: TranspilerApi = new TranspilerApi(
+        (file: string) => {
+            // nothing to do here by default
+        }
+    );
 }
 
 export class TSTranspilerDataConfig {
@@ -280,6 +292,7 @@ export class TSTranspilerDataBuilder {
     private data: TSTranspilerData = {
         input: '',
         path: null,
+        api: TranspilerApi.empty,
         classList: [],
         config: {template: new CompilerTemplateConfig()}
     };
@@ -297,6 +310,11 @@ export class TSTranspilerDataBuilder {
 
     withConfig(value: TSTranspilerDataConfig): TSTranspilerDataBuilder {
         this.data.config = value;
+        return this;
+    }
+
+    withApi(value: TranspilerApi): TSTranspilerDataBuilder {
+        this.data.api = value;
         return this;
     }
 
