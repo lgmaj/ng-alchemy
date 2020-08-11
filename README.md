@@ -128,11 +128,9 @@ export class TodoListItemComponent {
 ```
 
 
-# Example integration with angular-ts-decorators
+## Example integration with angular-ts-decorators
 
-example integration with **angular-ts-decorators**
-
-webpack.config.ts
+*webpack.config.ts*
 
 ```typescript
 import * as path from 'path';
