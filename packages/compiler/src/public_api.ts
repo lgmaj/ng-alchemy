@@ -5,6 +5,7 @@ export * from "./transpiler/public_api";
 export enum SupportedDecorators {
     Component = 'Component',
     Injectable = 'Injectable',
+    Inject = 'Inject',
     NgModule = 'NgModule',
     Input = 'Input',
     Output = 'Output',

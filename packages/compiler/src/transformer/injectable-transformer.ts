@@ -1,4 +1,4 @@
-import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
+import {CompilerUnitTransformer, SourceTransformation, SupportedDecorators} from "../public_api";
 import {DecoratorData, TSTranspilerClassData, TSTranspilerData, ValueObject} from "../transpiler/model";
 import {add, remove} from "../transformation";
 import {objectGetPropertyText, objectHasProperty} from "../object";
@@ -7,7 +7,7 @@ export class InjectableTransformer implements CompilerUnitTransformer {
     transform(data: TSTranspilerData): Array<SourceTransformation> {
         const result: Array<SourceTransformation> = [];
         data.classList.forEach(c =>
-            c.decorator.filter(d => d.name === 'Injectable').forEach(d => {
+            c.decorator.filter(d => d.name === SupportedDecorators.Injectable).forEach(d => {
                     result.push(
                         remove(d),
                         add(`static ngInjectableDef:any = {name:${this.getName(c, d)}};`, c.end - 1)

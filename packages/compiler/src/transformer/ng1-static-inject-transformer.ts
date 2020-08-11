@@ -1,4 +1,4 @@
-import {CompilerUnitTransformer, SourceTransformation} from "../public_api";
+import {CompilerUnitTransformer, SourceTransformation, SupportedDecorators} from "../public_api";
 import {extractClassName} from "../util";
 import * as ts from 'typescript';
 import {TSTranspilerData} from "../transpiler/model";
@@ -10,7 +10,7 @@ export class Ng1StaticInjectTransformer implements CompilerUnitTransformer {
         data.classList.forEach(c => {
             const staticInject: Array<string> = [];
             c.constructorParameterDecorator
-                .filter(d => d.name === 'Inject')
+                .filter(d => d.name === SupportedDecorators.Inject)
                 .forEach(
                     d => {
                         let type: string = null;
