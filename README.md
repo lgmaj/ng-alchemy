@@ -128,7 +128,7 @@ export class TodoListItemComponent {
 ```
 
 
-#example integration with angular-ts-decorators
+# Example integration with angular-ts-decorators
 
 example integration with **angular-ts-decorators**
 
