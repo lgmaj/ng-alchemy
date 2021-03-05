@@ -225,17 +225,34 @@ export class ClassPropertyData {
 export class ClassMethodData {
     constructor(readonly name: string,
                 readonly start: number,
-                readonly end: number) {
+                readonly end: number,
+                readonly parameters: Array<ClassMethodParameter>) {
     }
 
     static fromTsSource(method: ts.MethodDeclaration, source: ts.SourceFile) {
         return new ClassMethodData(
             getIdentifier(method.name),
             method.getStart(source),
-            method.getEnd()
+            method.getEnd(),
+            method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source))
         );
     }
 }
+
+export class ClassMethodParameter {
+    constructor(readonly name: string,
+                readonly type: string) {
+    }
+
+    static fromTsSource(param: ts.ParameterDeclaration,
+                        source: ts.SourceFile) {
+        return new ClassMethodParameter(
+            getIdentifier(param.name),
+            param.type ? param.type.getText(source) : null
+        );
+    }
+}
+
 
 export class TSTranspilerClassData {
     readonly decorator: Array<DecoratorData> = [];
@@ -243,7 +260,7 @@ export class TSTranspilerClassData {
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
 
     readonly methods: Array<ClassMethodData> = [];
-    readonly properties: Array<ClassMethodData> = [];
+    readonly properties: Array<ClassPropertyData> = [];
 
     constructor(readonly name: string,
                 readonly start: number,

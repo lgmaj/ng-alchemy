@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import {CompilerUnit, crateCompilationUnit, TranspilerApi} from "../src";
+import {ClassMethodParameter, CompilerUnit, crateCompilationUnit, TranspilerApi} from "../src";
 import {TSTranspiler} from "../src/transpiler";
 import {
     ClassMethodData,
@@ -19,6 +19,30 @@ import {
 } from "../src/transpiler/model";
 
 describe('transpiler spec', () => {
+
+    it('should create data for method params', () => {
+        const file = `
+        @Injectable()
+        class TestService {
+            fetch(component: string, params: Array<string>): void {}
+        }
+        `;
+
+        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file), TranspilerApi.empty);
+
+        expect(data).toEqual(new TSTranspilerDataBuilder()
+            .withInput(file)
+            .withApi(TranspilerApi.empty)
+            .addClass(new TSTranspilerClassData('TestService', 0, 129, undefined, []))
+            .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
+            .addClassMethod(new ClassMethodData('fetch', 63, 119, [
+                new ClassMethodParameter( 'component', 'string' ),
+                new ClassMethodParameter( 'params', 'Array<string>' )
+            ]))
+            .withConfig(new TSTranspilerDataConfig())
+            .build()
+        );
+    })
 
     it('should create data', () => {
 
@@ -117,8 +141,8 @@ describe('transpiler spec', () => {
             ))
             .addClassProperty(new ClassPropertyData('foo', 171, 205))
             .addClassProperty(new ClassPropertyData('bar', 231, 263))
-            .addClassMethod(new ClassMethodData('$onInit', 482, 514))
-            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575))
+            .addClassMethod(new ClassMethodData('$onInit', 482, 514, []))
+            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575, []))
             .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController']))
             .addClassDecorator(new DecoratorData(
                 'Component',
@@ -146,7 +170,7 @@ describe('transpiler spec', () => {
                 `@Component({selector: 'ng-alchemy-extended-test', template: 'new better component'})`,
                 603, 687
             ))
-            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818))
+            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818, []))
             .withConfig(new TSTranspilerDataConfig())
             .build()
         );
