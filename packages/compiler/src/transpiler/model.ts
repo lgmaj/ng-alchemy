@@ -222,12 +222,14 @@ export class ClassPropertyData {
     }
 }
 
-export class ClassMethodData {
+export class ClassMethodData extends TextRange {
     constructor(readonly name: string,
                 readonly start: number,
                 readonly end: number,
                 readonly parameters: Array<ClassMethodParameter>,
-                readonly decorators: Array<DecoratorData>) {
+                readonly decorators: Array<DecoratorData>,
+                readonly type: string) {
+        super(null, start, end)
     }
 
     static fromTsSource(method: ts.MethodDeclaration, source: ts.SourceFile) {
@@ -237,7 +239,8 @@ export class ClassMethodData {
             method.getStart(source),
             method.getEnd(),
             method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source)),
-            decorators.map(decorator => DecoratorData.fromTsSource(decorator, source))
+            decorators.map(decorator => DecoratorData.fromTsSource(decorator, source)),
+            method.type ? method.type.getText(source) : null
         );
     }
 }
