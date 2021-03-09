@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import {SyntaxKind} from 'typescript';
 import {ClassMethodParameter, CompilerUnit, crateCompilationUnit, TranspilerApi} from "../src";
 import {TSTranspiler} from "../src/transpiler";
 import {
@@ -25,6 +26,12 @@ describe('transpiler spec', () => {
         @Injectable()
         class TestService {
             fetch(component: string, params: Array<string>): void {}
+            
+            @NotEmpty()
+            annotatedMethod1() : void {}
+
+            @Transform({param: 'test'})
+            annotatedMethod2() : void {}  
         }
         `;
 
@@ -33,11 +40,31 @@ describe('transpiler spec', () => {
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
             .withApi(TranspilerApi.empty)
-            .addClass(new TSTranspilerClassData('TestService', 0, 129, undefined, []))
+            .addClass(new TSTranspilerClassData('TestService', 0, 291, undefined, []))
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
             .addClassMethod(new ClassMethodData('fetch', 63, 119, [
-                new ClassMethodParameter( 'component', 'string' ),
-                new ClassMethodParameter( 'params', 'Array<string>' )
+                new ClassMethodParameter('component', 'string'),
+                new ClassMethodParameter('params', 'Array<string>')
+            ], []))
+            .addClassMethod(new ClassMethodData('annotatedMethod1', 145, 197, [], [
+                new DecoratorData('NotEmpty', [], '@NotEmpty()', 145, 156)
+            ]))
+            .addClassMethod(new ClassMethodData('annotatedMethod2', 211, 279, [], [
+                new DecoratorData('Transform', [
+                    new DecoratorArguments(
+                        SyntaxKind.ObjectLiteralExpression,
+                        '{param: \'test\'}',
+                        222, 237,
+                        new ValueObject(222, 237, [
+                            new ValueObjectProperty(
+                                null,
+                                223, 236,
+                                new TextRange('param', 223, 228),
+                                new TextRange('\'test\'', 229, 236),
+                                SyntaxKind.StringLiteral)
+                        ])
+                    )
+                ], '@Transform({param: \'test\'})', 211, 238)
             ]))
             .withConfig(new TSTranspilerDataConfig())
             .build()
@@ -141,8 +168,8 @@ describe('transpiler spec', () => {
             ))
             .addClassProperty(new ClassPropertyData('foo', 171, 205))
             .addClassProperty(new ClassPropertyData('bar', 231, 263))
-            .addClassMethod(new ClassMethodData('$onInit', 482, 514, []))
-            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575, []))
+            .addClassMethod(new ClassMethodData('$onInit', 482, 514, [], []))
+            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575, [], []))
             .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController']))
             .addClassDecorator(new DecoratorData(
                 'Component',
@@ -170,7 +197,7 @@ describe('transpiler spec', () => {
                 `@Component({selector: 'ng-alchemy-extended-test', template: 'new better component'})`,
                 603, 687
             ))
-            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818, []))
+            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818, [], []))
             .withConfig(new TSTranspilerDataConfig())
             .build()
         );

@@ -142,9 +142,9 @@ export class DecoratorData extends TextRange {
     }
 
     static fromTsSource(decorator: ts.Decorator,
-                        args: Array<any>,
                         source: ts.SourceFile): DecoratorData {
         const exp: any = decorator.expression;
+        const args: Array<any> = exp.arguments;
         return new DecoratorData(
             exp.expression.text,
             args.map(arg => DecoratorArguments.fromTsSource(arg, source)),
@@ -226,15 +226,18 @@ export class ClassMethodData {
     constructor(readonly name: string,
                 readonly start: number,
                 readonly end: number,
-                readonly parameters: Array<ClassMethodParameter>) {
+                readonly parameters: Array<ClassMethodParameter>,
+                readonly decorators: Array<DecoratorData>) {
     }
 
     static fromTsSource(method: ts.MethodDeclaration, source: ts.SourceFile) {
+        const decorators: Array<any> = (method.decorators || []) as Array<any>;
         return new ClassMethodData(
             getIdentifier(method.name),
             method.getStart(source),
             method.getEnd(),
-            method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source))
+            method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source)),
+            decorators.map(decorator => DecoratorData.fromTsSource(decorator, source))
         );
     }
 }

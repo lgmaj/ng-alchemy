@@ -68,9 +68,8 @@ export class TSTranspiler {
 
             if (node.decorators) {
                 node.decorators.forEach(decorator => {
-                    const exp: any = decorator.expression;
                     this.dataBuilder.addClassDecorator(DecoratorData.fromTsSource(
-                        decorator, exp.arguments, source
+                        decorator, source
                     ));
                 })
             }
