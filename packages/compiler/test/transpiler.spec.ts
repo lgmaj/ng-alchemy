@@ -21,6 +21,34 @@ import {
 
 describe('transpiler spec', () => {
 
+    it('should create data for abstract class', () => {
+        const file = `
+        abstract class TestAbstractService {
+            protected abstractMethod() : void;
+        }
+        `;
+
+        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file), TranspilerApi.empty);
+
+        expect(data).toEqual(new TSTranspilerDataBuilder()
+            .withInput(file)
+            .withApi(TranspilerApi.empty)
+            .addClass(new TSTranspilerClassData('TestAbstractService', 0, 102, undefined, []))
+            .addClassMethod(
+                new ClassMethodData(
+                    'abstractMethod',
+                    58, 92,
+                    [],
+                    [],
+                    'void',
+                    null
+                )
+            )
+            .withConfig(new TSTranspilerDataConfig())
+            .build()
+        );
+    })
+
     it('should create data for method params', () => {
         const file = `
         @Injectable()

@@ -246,11 +246,11 @@ export class ClassMethodData extends TextRange {
             method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source)),
             decorators.map(decorator => DecoratorData.fromTsSource(decorator, source)),
             method.type ? method.type.getText(source) : null,
-            new TextRange(
+            method.body ? new TextRange(
                 null,
                 method.body.getStart(source),
                 method.body.getEnd()
-            )
+            ) : null
         );
     }
 }
