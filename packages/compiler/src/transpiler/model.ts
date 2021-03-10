@@ -7,6 +7,10 @@ export class TextRange {
                 readonly start: number,
                 readonly end: number) {
     }
+
+    getText(input: string): string {
+        return input.substring(this.start, this.end);
+    }
 }
 
 export class PropertyData {
@@ -224,11 +228,12 @@ export class ClassPropertyData {
 
 export class ClassMethodData extends TextRange {
     constructor(readonly name: string,
-                readonly start: number,
-                readonly end: number,
+                start: number,
+                end: number,
                 readonly parameters: Array<ClassMethodParameter>,
                 readonly decorators: Array<DecoratorData>,
-                readonly type: string) {
+                readonly type: string,
+                readonly body: TextRange) {
         super(null, start, end)
     }
 
@@ -240,7 +245,12 @@ export class ClassMethodData extends TextRange {
             method.getEnd(),
             method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source)),
             decorators.map(decorator => DecoratorData.fromTsSource(decorator, source)),
-            method.type ? method.type.getText(source) : null
+            method.type ? method.type.getText(source) : null,
+            new TextRange(
+                null,
+                method.body.getStart(source),
+                method.body.getEnd()
+            )
         );
     }
 }

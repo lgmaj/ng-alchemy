@@ -47,13 +47,23 @@ describe('transpiler spec', () => {
             .withApi(TranspilerApi.empty)
             .addClass(new TSTranspilerClassData('TestService', 0, 463, undefined, []))
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
-            .addClassMethod(new ClassMethodData('fetch', 63, 119, [
-                new ClassMethodParameter('component', 'string'),
-                new ClassMethodParameter('params', 'Array<string>')
-            ], [], 'void'))
+            .addClassMethod(
+                new ClassMethodData(
+                    'fetch',
+                    63, 119,
+                    [
+                        new ClassMethodParameter('component', 'string'),
+                        new ClassMethodParameter('params', 'Array<string>')
+                    ],
+                    [],
+                    'void',
+                    new TextRange(null, 117, 119)
+                )
+            )
             .addClassMethod(new ClassMethodData('annotatedMethod1', 145, 197, [], [
-                new DecoratorData('NotEmpty', [], '@NotEmpty()', 145, 156)
-            ], 'void'))
+                    new DecoratorData('NotEmpty', [], '@NotEmpty()', 145, 156)
+                ], 'void',
+                new TextRange(null, 195, 197)))
             .addClassMethod(new ClassMethodData('annotatedMethod2', 211, 279, [], [
                     new DecoratorData('Transform', [
                         new DecoratorArguments(
@@ -71,11 +81,15 @@ describe('transpiler spec', () => {
                         )
                     ], '@Transform({param: \'test\'})', 211, 238)
                 ],
-                'void'
+                'void',
+                new TextRange(null, 277, 279)
             ))
-            .addClassMethod(new ClassMethodData('untypedMethod', 307, 325, [], [], null))
-            .addClassMethod(new ClassMethodData('simpleTypedMethod', 351, 389, [], [], 'int'))
-            .addClassMethod(new ClassMethodData('typedMethod', 402, 453, [], [], 'Promise<Array<int>>'))
+            .addClassMethod(new ClassMethodData('untypedMethod', 307, 325, [], [], null,
+                new TextRange(null, 323, 325)))
+            .addClassMethod(new ClassMethodData('simpleTypedMethod', 351, 389, [], [], 'int',
+                new TextRange(null, 376, 389)))
+            .addClassMethod(new ClassMethodData('typedMethod', 402, 453, [], [], 'Promise<Array<int>>',
+                new TextRange(null, 437, 453)))
             .withConfig(new TSTranspilerDataConfig())
             .build()
         );
@@ -178,8 +192,10 @@ describe('transpiler spec', () => {
             ))
             .addClassProperty(new ClassPropertyData('foo', 171, 205))
             .addClassProperty(new ClassPropertyData('bar', 231, 263))
-            .addClassMethod(new ClassMethodData('$onInit', 482, 514, [], [], 'void'))
-            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575, [], [], 'void'))
+            .addClassMethod(new ClassMethodData('$onInit', 482, 514, [], [], 'void',
+                new TextRange(null, 499, 514)))
+            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575, [], [], 'void',
+                new TextRange(null, 560, 575)))
             .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController']))
             .addClassDecorator(new DecoratorData(
                 'Component',
@@ -207,7 +223,8 @@ describe('transpiler spec', () => {
                 `@Component({selector: 'ng-alchemy-extended-test', template: 'new better component'})`,
                 603, 687
             ))
-            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818, [], [], 'void'))
+            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818, [], [], 'void',
+                new TextRange(null, 803, 818)))
             .withConfig(new TSTranspilerDataConfig())
             .build()
         );
