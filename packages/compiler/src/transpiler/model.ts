@@ -273,6 +273,7 @@ export class ClassMethodParameter {
 export class TSTranspilerClassData {
     readonly decorator: Array<DecoratorData> = [];
     readonly propertyDecorator: Array<PropertyDecoratorData> = [];
+    readonly constructorParameter: Array<ConstructorParameter> = [];
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
 
     readonly methods: Array<ClassMethodData> = [];
@@ -369,6 +370,11 @@ export class TSTranspilerDataBuilder {
 
     addClassConstructorParameterDecorator(decorator: ConstructorParameterDecorator): TSTranspilerDataBuilder {
         this.current.constructorParameterDecorator.push(decorator);
+        return this;
+    }
+
+    addClassConstructorParameter(decorator: ConstructorParameter): TSTranspilerDataBuilder {
+        this.current.constructorParameter.push(decorator);
         return this;
     }
 

@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import {CompilerUnit, TranspilerApi} from "./public_api";
+import {CompilerUnit, ConstructorParameter, TranspilerApi} from "./public_api";
 import {createProgram} from "./transpiler/util";
 import {createTranspilerOptions} from "./transpiler/options";
 import {
@@ -56,13 +56,16 @@ export class TSTranspiler {
             const ctr: ts.ConstructorDeclaration = node.members.find(ts.isConstructorDeclaration);
 
             if (ctr) {
-                ctr.parameters.filter(p => !!p.decorators).forEach(param => {
-                    param.decorators.forEach(decorator => {
-                        const exp: any = decorator.expression;
-                        this.dataBuilder.addClassConstructorParameterDecorator(ConstructorParameterDecorator.fromTsSource(
-                            decorator, exp.arguments, param, source
-                        ));
-                    })
+                ctr.parameters.forEach(param => {
+                    this.dataBuilder.addClassConstructorParameter(ConstructorParameter.fromTsSource(param, source));
+                    if (!!param.decorators) {
+                        param.decorators.forEach(decorator => {
+                            const exp: any = decorator.expression;
+                            this.dataBuilder.addClassConstructorParameterDecorator(ConstructorParameterDecorator.fromTsSource(
+                                decorator, exp.arguments, param, source
+                            ));
+                        })
+                    }
                 })
             }
 

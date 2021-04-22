@@ -49,6 +49,27 @@ describe('transpiler spec', () => {
         );
     })
 
+    it('should create data for constructor parameters', () => {
+        const file = `
+        class TestClassParams {
+            constructor(readonly param1 : Foo,
+                        readonly param2 : Array<Bar>) {}
+        }
+        `;
+
+        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file), TranspilerApi.empty);
+
+        expect(data).toEqual(new TSTranspilerDataBuilder()
+            .withInput(file)
+            .withApi(TranspilerApi.empty)
+            .addClass(new TSTranspilerClassData('TestClassParams', 0, 146, undefined, []))
+            .addClassConstructorParameter(new ConstructorParameter('param1', 'Foo', [ts.SyntaxKind.ReadonlyKeyword]))
+            .addClassConstructorParameter(new ConstructorParameter('param2', 'Array<Bar>', [ts.SyntaxKind.ReadonlyKeyword]))
+            .withConfig(new TSTranspilerDataConfig())
+            .build()
+        );
+    })
+
     it('should create data for method params', () => {
         const file = `
         @Injectable()
@@ -201,6 +222,9 @@ describe('transpiler spec', () => {
                 231, 240,
                 new PropertyData('bar', 'any')
             ))
+            .addClassConstructorParameter(new ConstructorParameter('$injector', null, []))
+            .addClassConstructorParameter(new ConstructorParameter('$q', 'any', [ts.SyntaxKind.PrivateKeyword]))
+            .addClassConstructorParameter(new ConstructorParameter('testService', 'TestService', [ts.SyntaxKind.PrivateKeyword]))
             .addClassConstructorParameterDecorator(new ConstructorParameterDecorator(
                 'Inject', [],
                 '@Inject()', 301, 310,
