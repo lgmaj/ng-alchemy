@@ -7,16 +7,18 @@ import {
     crateCompilationUnit,
     DecoratorData,
     Ng1StaticInjectTransformer,
-    SourceTransformation, TranspilerApi,
+    SourceTransformation,
+    TranspilerApi,
     TSTranspilerClassData
 } from "../compiler";
 import {GenericClassDecoratorTransformer} from "../compiler/src/transformer";
 import {registerCompilerFileSystem} from "../compiler/src/filesystem";
-import {loader} from "webpack";
+import {LoaderContext} from "webpack";
+import {LoaderOptions} from "ts-loader/dist/interfaces";
 
 const registry: { [key: string]: CompilerConfig } = {};
 
-export default function loader(this: loader.LoaderContext, source: string): string {
+export default function loader(this: LoaderContext<LoaderOptions>, source: string): string {
     return compile(
         crateCompilationUnit(this.resourcePath, source, this.context),
         getCompilerConfig(this.query),
