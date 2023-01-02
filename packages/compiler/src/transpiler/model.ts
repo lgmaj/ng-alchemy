@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import {first, getHeritageClauses, getIdentifier, getModifiers} from "./util";
+import {first, getDecorators, getHeritageClauses, getIdentifier, getModifiers} from "./util";
 import {CompilerTemplateConfig} from "../public_api";
 
 export class TextRange {
@@ -238,13 +238,12 @@ export class ClassMethodData extends TextRange {
     }
 
     static fromTsSource(method: ts.MethodDeclaration, source: ts.SourceFile) {
-        const decorators: Array<any> = (method.decorators || []) as Array<any>;
         return new ClassMethodData(
             getIdentifier(method.name),
             method.getStart(source),
             method.getEnd(),
             method.parameters.map(param => ClassMethodParameter.fromTsSource(param, source)),
-            decorators.map(decorator => DecoratorData.fromTsSource(decorator, source)),
+            getDecorators(method).map(decorator => DecoratorData.fromTsSource(decorator, source)),
             method.type ? method.type.getText(source) : null,
             method.body ? new TextRange(
                 null,

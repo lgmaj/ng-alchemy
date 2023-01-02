@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import {CompilerUnit, ConstructorParameter, TranspilerApi} from "./public_api";
-import {createProgram} from "./transpiler/util";
+import {createProgram, getDecorators} from "./transpiler/util";
 import {createTranspilerOptions} from "./transpiler/options";
 import {
     ClassMethodData,
@@ -36,21 +36,19 @@ export class TSTranspiler {
         if (ts.isClassDeclaration(node)) {
             this.dataBuilder.addClass(TSTranspilerClassData.fromTsSource(node));
 
-            node.members.filter(ts.isPropertyDeclaration).filter(n => !!n.decorators).forEach(property => {
-                property.decorators.forEach(decorator => {
+            node.members.filter(ts.isPropertyDeclaration).forEach(property => {
+                this.dataBuilder.addClassProperty(ClassPropertyData.fromTsSource(property, source));
+
+                getDecorators(property).forEach(decorator => {
                     const exp: any = decorator.expression;
                     this.dataBuilder.addPropertyDecoratorData(PropertyDecoratorData.fromTsSource(
                         decorator, exp.arguments, property, source
                     ));
-                })
+                });
             });
 
             node.members.filter(ts.isMethodDeclaration).forEach(method => {
                 this.dataBuilder.addClassMethod(ClassMethodData.fromTsSource(method, source));
-            });
-
-            node.members.filter(ts.isPropertyDeclaration).forEach(property => {
-                this.dataBuilder.addClassProperty(ClassPropertyData.fromTsSource(property, source));
             });
 
             const ctr: ts.ConstructorDeclaration = node.members.find(ts.isConstructorDeclaration);
@@ -58,24 +56,20 @@ export class TSTranspiler {
             if (ctr) {
                 ctr.parameters.forEach(param => {
                     this.dataBuilder.addClassConstructorParameter(ConstructorParameter.fromTsSource(param, source));
-                    if (!!param.decorators) {
-                        param.decorators.forEach(decorator => {
-                            const exp: any = decorator.expression;
-                            this.dataBuilder.addClassConstructorParameterDecorator(ConstructorParameterDecorator.fromTsSource(
-                                decorator, exp.arguments, param, source
-                            ));
-                        })
-                    }
+                    getDecorators(param).forEach(decorator => {
+                        const exp: any = decorator.expression;
+                        this.dataBuilder.addClassConstructorParameterDecorator(ConstructorParameterDecorator.fromTsSource(
+                            decorator, exp.arguments, param, source
+                        ));
+                    })
                 })
             }
 
-            if (node.decorators) {
-                node.decorators.forEach(decorator => {
-                    this.dataBuilder.addClassDecorator(DecoratorData.fromTsSource(
-                        decorator, source
-                    ));
-                })
-            }
+            getDecorators(node).forEach(decorator => {
+                this.dataBuilder.addClassDecorator(DecoratorData.fromTsSource(
+                    decorator, source
+                ));
+            })
         }
     }
 }

@@ -15,7 +15,11 @@ export function getIdentifier(node: ts.Node): string {
 }
 
 export function getModifiers(node: ts.Node): Array<number> {
-    return node.modifiers ? node.modifiers.map(m => m.kind) : [];
+    return ts.canHaveModifiers(node) ? (ts.getModifiers(node) || []).map(m => m.kind) : [];
+}
+
+export function getDecorators(node: ts.Node): ReadonlyArray<ts.Decorator> {
+    return ts.canHaveDecorators(node) ? ts.getDecorators(node) || [] : [];
 }
 
 export function getHeritageClauses(node: ts.ClassDeclaration, kind: ts.SyntaxKind): Array<string> {
