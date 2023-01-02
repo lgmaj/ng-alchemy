@@ -1,11 +1,12 @@
 import * as path from 'path';
 import {optionsBuilder} from "../../dist/loader";
-import {Ng1ComponentTransformer, Ng1InjectableTransformer} from "../../dist/compiler";
+import {Ng1ComponentTransformer, Ng1InjectableTransformer, Ng1FactoryTransformer} from "../../dist/compiler";
 import {NodeCompilerFileSystem} from "../../node-compiler-file-system";
 
 const ANGULAR_TS_DECORATORS_INTEGRATION = optionsBuilder()
     .addStaticInjectTransformer()
     .addTransformer(new Ng1InjectableTransformer())
+    .addTransformer(new Ng1FactoryTransformer())
     .addTransformer(new Ng1ComponentTransformer())
     .withTemplateLoader(new NodeCompilerFileSystem())
     .withTemplateTranspiler()

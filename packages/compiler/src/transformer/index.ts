@@ -6,3 +6,4 @@ export {Ng1InjectableTransformer} from './ng1-injectable-transformer';
 export {Ng1InjectTransformer} from './ng1-inject-transformer';
 export {Ng1StaticInjectTransformer} from './ng1-static-inject-transformer';
 export {Ng1ComponentTransformer} from './ng1-component-transformer';
+export {Ng1FactoryTransformer} from './ng1-factory-transformer';
