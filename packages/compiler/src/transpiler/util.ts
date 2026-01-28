@@ -18,6 +18,30 @@ export function getModifiers(node: ts.Node): Array<number> {
     return ts.canHaveModifiers(node) ? (ts.getModifiers(node) || []).map(m => m.kind) : [];
 }
 
+interface ModifiersProvider {
+    modifiers: Array<number>;
+}
+
+export function hasPrivateModifier(node: ModifiersProvider): boolean {
+    return node.modifiers.indexOf(ts.SyntaxKind.PrivateKeyword) > -1;
+}
+
+export function hasPublicModifier(node: ModifiersProvider): boolean {
+    return node.modifiers.indexOf(ts.SyntaxKind.PublicKeyword) > -1;
+}
+
+export function hasProtectedModifier(node: ModifiersProvider): boolean {
+    return node.modifiers.indexOf(ts.SyntaxKind.ProtectedKeyword) > -1;
+}
+
+export function hasStaticModifier(node: ModifiersProvider): boolean {
+    return node.modifiers.indexOf(ts.SyntaxKind.StaticKeyword) > -1;
+}
+
+export function hasAsyncModifier(node: ModifiersProvider): boolean {
+    return node.modifiers.indexOf(ts.SyntaxKind.AsyncKeyword) > -1;
+}
+
 export function getDecorators(node: ts.Node): ReadonlyArray<ts.Decorator> {
     return ts.canHaveDecorators(node) ? ts.getDecorators(node) || [] : [];
 }

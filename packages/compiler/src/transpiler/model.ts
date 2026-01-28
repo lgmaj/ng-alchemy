@@ -1,5 +1,16 @@
 import * as ts from "typescript";
-import {first, getDecorators, getHeritageClauses, getIdentifier, getModifiers} from "./util";
+import {
+    first,
+    getDecorators,
+    getHeritageClauses,
+    getIdentifier,
+    getModifiers,
+    hasAsyncModifier,
+    hasPrivateModifier,
+    hasProtectedModifier,
+    hasPublicModifier,
+    hasStaticModifier
+} from "./util";
 import {CompilerTemplateConfig} from "../public_api";
 
 export class TextRange {
@@ -10,6 +21,10 @@ export class TextRange {
 
     getText(input: string): string {
         return input.substring(this.start, this.end);
+    }
+
+    includesText(input: string, text: string): boolean {
+        return input.substring(this.start, this.end).indexOf(text) > -1;
     }
 }
 
@@ -27,10 +42,55 @@ export class PropertyData {
     }
 }
 
+export class ConstructorData extends TextRange {
+    constructor(readonly start: number,
+                readonly end: number,
+                readonly body: TextRange) {
+        super(null, start, end);
+    }
+
+    static fromTsSource(node: ts.ConstructorDeclaration,
+                        source: ts.SourceFile): ConstructorData {
+        if (!node) {
+            return null;
+        }
+
+        return new ConstructorData(
+            node.getStart(source),
+            node.getEnd(),
+            node.body ? new TextRange(
+                null,
+                node.body.getStart(source),
+                node.body.getEnd()
+            ) : null
+        );
+    }
+}
+
 export class ConstructorParameter {
     constructor(readonly name: string,
                 readonly type: string,
                 readonly modifiers: Array<number>) {
+    }
+
+    isPrivate(): boolean {
+        return hasPrivateModifier(this);
+    }
+
+    isProtected(): boolean {
+        return hasProtectedModifier(this);
+    }
+
+    isPublic(): boolean {
+        return hasPublicModifier(this);
+    }
+
+    isStatic(): boolean {
+        return hasStaticModifier(this);
+    }
+
+    isAsync(): boolean {
+        return hasAsyncModifier(this);
     }
 
     static fromTsSource(param: ts.ParameterDeclaration,
@@ -233,8 +293,29 @@ export class ClassMethodData extends TextRange {
                 readonly parameters: Array<ClassMethodParameter>,
                 readonly decorators: Array<DecoratorData>,
                 readonly type: string,
-                readonly body: TextRange) {
+                readonly body: TextRange,
+                readonly modifiers: Array<number>) {
         super(null, start, end)
+    }
+
+    isPrivate(): boolean {
+        return hasPrivateModifier(this);
+    }
+
+    isProtected(): boolean {
+        return hasProtectedModifier(this);
+    }
+
+    isPublic(): boolean {
+        return hasPublicModifier(this);
+    }
+
+    isStatic(): boolean {
+        return hasStaticModifier(this);
+    }
+
+    isAsync(): boolean {
+        return hasAsyncModifier(this);
     }
 
     static fromTsSource(method: ts.MethodDeclaration, source: ts.SourceFile) {
@@ -249,7 +330,8 @@ export class ClassMethodData extends TextRange {
                 null,
                 method.body.getStart(source),
                 method.body.getEnd()
-            ) : null
+            ) : null,
+            getModifiers(method)
         );
     }
 }
@@ -274,7 +356,6 @@ export class TSTranspilerClassData {
     readonly propertyDecorator: Array<PropertyDecoratorData> = [];
     readonly constructorParameter: Array<ConstructorParameter> = [];
     readonly constructorParameterDecorator: Array<ConstructorParameterDecorator> = [];
-
     readonly methods: Array<ClassMethodData> = [];
     readonly properties: Array<ClassPropertyData> = [];
 
@@ -282,16 +363,19 @@ export class TSTranspilerClassData {
                 readonly start: number,
                 readonly end: number,
                 readonly extendsOf: string,
-                readonly implementsOf: Array<string>) {
+                readonly implementsOf: Array<string>,
+                readonly ctr: ConstructorData) {
     }
 
-    static fromTsSource(node: ts.ClassDeclaration): TSTranspilerClassData {
+    static fromTsSource(node: ts.ClassDeclaration,
+                        source: ts.SourceFile): TSTranspilerClassData {
         return new TSTranspilerClassData(
             node.name.text,
             node.pos,
             node.end,
             first(getHeritageClauses(node, ts.SyntaxKind.ExtendsKeyword)),
-            getHeritageClauses(node, ts.SyntaxKind.ImplementsKeyword)
+            getHeritageClauses(node, ts.SyntaxKind.ImplementsKeyword),
+            ConstructorData.fromTsSource(node.members.find(ts.isConstructorDeclaration), source)
         );
     }
 }

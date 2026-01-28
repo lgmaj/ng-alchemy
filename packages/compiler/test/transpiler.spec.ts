@@ -1,25 +1,103 @@
 import * as ts from 'typescript';
 import {SyntaxKind} from 'typescript';
-import {ClassMethodParameter, CompilerUnit, crateCompilationUnit, TranspilerApi} from "../src";
-import {TSTranspiler} from "../src/transpiler";
 import {
     ClassMethodData,
+    ClassMethodParameter,
     ClassPropertyData,
+    CompilerUnit,
+    ConstructorData,
     ConstructorParameter,
     ConstructorParameterDecorator,
+    crateCompilationUnit,
     DecoratorArguments,
     DecoratorData,
     PropertyData,
     PropertyDecoratorData,
     TextRange,
+    TranspilerApi,
     TSTranspilerClassData,
     TSTranspilerDataBuilder,
     TSTranspilerDataConfig,
     ValueObject,
     ValueObjectProperty
 } from "../src";
+import {TSTranspiler} from "../src/transpiler";
 
 describe('transpiler spec', () => {
+
+    it('should create data for abstract class', () => {
+        const file = `
+        abstract class TestAbstractService {
+            protected abstractMethod() : void;
+            async abstractAsyncMethod(): Promise<void>;
+            static staticMethod():number { return 78; }
+            protected static protectedStaticMethod():number { return 87; }
+        }
+        `;
+
+        const data = new TSTranspiler().transpile(crateCompilationUnitMock(file), TranspilerApi.empty);
+
+        expect(data).toEqual(new TSTranspilerDataBuilder()
+            .withInput(file)
+            .withApi(TranspilerApi.empty)
+            .addClass(
+                new TSTranspilerClassData(
+                    'TestAbstractService',
+                    0,
+                    289,
+                    undefined,
+                    [],
+                    null
+                )
+            )
+            .addClassMethod(
+                new ClassMethodData(
+                    'abstractMethod',
+                    58, 92,
+                    [],
+                    [],
+                    'void',
+                    null,
+                    [ts.SyntaxKind.ProtectedKeyword]
+                )
+            )
+            .addClassMethod(
+                new ClassMethodData(
+                    'abstractAsyncMethod',
+                    105, 148,
+                    [],
+                    [],
+                    'Promise<void>',
+                    null,
+                    [ts.SyntaxKind.AsyncKeyword]
+                )
+            )
+            .addClassMethod(
+                new ClassMethodData(
+                    'staticMethod',
+                    161, 204,
+                    [],
+                    [],
+                    'number',
+                    new TextRange(null, 190, 204),
+                    [ts.SyntaxKind.StaticKeyword]
+                )
+            )
+            .addClassMethod(
+                new ClassMethodData(
+                    'protectedStaticMethod',
+                    217, 279,
+                    [],
+                    [],
+                    'number',
+                    new TextRange(null, 265, 279),
+                    [ts.SyntaxKind.ProtectedKeyword, ts.SyntaxKind.StaticKeyword]
+                )
+            )
+            .withConfig(new TSTranspilerDataConfig())
+            .build()
+        );
+    })
 
     it('should create data for abstract class', () => {
         const file = `
@@ -33,7 +111,16 @@ describe('transpiler spec', () => {
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
             .withApi(TranspilerApi.empty)
-            .addClass(new TSTranspilerClassData('TestAbstractService', 0, 102, undefined, []))
+            .addClass(
+                new TSTranspilerClassData(
+                    'TestAbstractService',
+                    0,
+                    102,
+                    undefined,
+                    [],
+                    null
+                )
+            )
             .addClassMethod(
                 new ClassMethodData(
                     'abstractMethod',
@@ -41,7 +128,8 @@ describe('transpiler spec', () => {
                     [],
                     [],
                     'void',
-                    null
+                    null,
+                    [ts.SyntaxKind.ProtectedKeyword]
                 )
             )
             .withConfig(new TSTranspilerDataConfig())
@@ -62,7 +150,20 @@ describe('transpiler spec', () => {
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
             .withApi(TranspilerApi.empty)
-            .addClass(new TSTranspilerClassData('TestClassParams', 0, 146, undefined, []))
+            .addClass(
+                new TSTranspilerClassData(
+                    'TestClassParams',
+                    0,
+                    146,
+                    undefined,
+                    [],
+                    new ConstructorData(
+                        45,
+                        136,
+                        new TextRange(null, 134, 136)
+                    )
+                )
+            )
             .addClassConstructorParameter(new ConstructorParameter('param1', 'Foo', [ts.SyntaxKind.ReadonlyKeyword]))
             .addClassConstructorParameter(new ConstructorParameter('param2', 'Array<Bar>', [ts.SyntaxKind.ReadonlyKeyword]))
             .withConfig(new TSTranspilerDataConfig())
@@ -94,7 +195,7 @@ describe('transpiler spec', () => {
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
             .withApi(TranspilerApi.empty)
-            .addClass(new TSTranspilerClassData('TestService', 0, 463, undefined, []))
+            .addClass(new TSTranspilerClassData('TestService', 0, 463, undefined, [], null))
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
             .addClassMethod(
                 new ClassMethodData(
@@ -106,13 +207,22 @@ describe('transpiler spec', () => {
                     ],
                     [],
                     'void',
-                    new TextRange(null, 117, 119)
+                    new TextRange(null, 117, 119),
+                    []
                 )
             )
-            .addClassMethod(new ClassMethodData('annotatedMethod1', 145, 197, [], [
-                    new DecoratorData('NotEmpty', [], '@NotEmpty()', 145, 156)
-                ], 'void',
-                new TextRange(null, 195, 197)))
+            .addClassMethod(
+                new ClassMethodData(
+                    'annotatedMethod1',
+                    145,
+                    197,
+                    [],
+                    [new DecoratorData('NotEmpty', [], '@NotEmpty()', 145, 156)],
+                    'void',
+                    new TextRange(null, 195, 197),
+                    []
+                )
+            )
             .addClassMethod(new ClassMethodData('annotatedMethod2', 211, 279, [], [
                     new DecoratorData('Transform', [
                         new DecoratorArguments(
@@ -131,14 +241,41 @@ describe('transpiler spec', () => {
                     ], '@Transform({param: \'test\'})', 211, 238)
                 ],
                 'void',
-                new TextRange(null, 277, 279)
+                new TextRange(null, 277, 279),
+                []
             ))
-            .addClassMethod(new ClassMethodData('untypedMethod', 307, 325, [], [], null,
-                new TextRange(null, 323, 325)))
-            .addClassMethod(new ClassMethodData('simpleTypedMethod', 351, 389, [], [], 'int',
-                new TextRange(null, 376, 389)))
-            .addClassMethod(new ClassMethodData('typedMethod', 402, 453, [], [], 'Promise<Array<int>>',
-                new TextRange(null, 437, 453)))
+            .addClassMethod(
+                new ClassMethodData(
+                    'untypedMethod',
+                    307,
+                    325,
+                    [],
+                    [],
+                    null,
+                    new TextRange(null, 323, 325),
+                    []
+                )
+            )
+            .addClassMethod(
+                new ClassMethodData(
+                    'simpleTypedMethod',
+                    351, 389,
+                    [], [],
+                    'int',
+                    new TextRange(null, 376, 389),
+                    []
+                )
+            )
+            .addClassMethod(
+                new ClassMethodData(
+                    'typedMethod',
+                    402, 453,
+                    [], [],
+                    'Promise<Array<int>>',
+                    new TextRange(null, 437, 453),
+                    []
+                )
+            )
             .withConfig(new TSTranspilerDataConfig())
             .build()
         );
@@ -183,9 +320,30 @@ describe('transpiler spec', () => {
         expect(data).toEqual(new TSTranspilerDataBuilder()
             .withInput(file)
             .withApi(TranspilerApi.empty)
-            .addClass(new TSTranspilerClassData('TestService', 0, 60, undefined, []))
+            .addClass(
+                new TSTranspilerClassData(
+                    'TestService',
+                    0,
+                    60,
+                    undefined,
+                    [],
+                    null
+                )
+            )
             .addClassDecorator(new DecoratorData('Injectable', [], '@Injectable()', 9, 22))
-            .addClass(new TSTranspilerClassData('TestComponent', 60, 585, undefined, []))
+            .addClass(new TSTranspilerClassData(
+                    'TestComponent',
+                    60,
+                    585,
+                    undefined,
+                    [],
+                    new ConstructorData(
+                        289,
+                        456,
+                        new TextRange(null, 454, 456)
+                    )
+                )
+            )
             .addClassDecorator(new DecoratorData(
                 'Component',
                 [
@@ -244,11 +402,25 @@ describe('transpiler spec', () => {
             ))
             .addClassProperty(new ClassPropertyData('foo', 171, 205))
             .addClassProperty(new ClassPropertyData('bar', 231, 263))
-            .addClassMethod(new ClassMethodData('$onInit', 482, 514, [], [], 'void',
-                new TextRange(null, 499, 514)))
-            .addClassMethod(new ClassMethodData('$onDestroy', 540, 575, [], [], 'void',
-                new TextRange(null, 560, 575)))
-            .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController']))
+            .addClassMethod(
+                new ClassMethodData(
+                    '$onInit',
+                    482, 514,
+                    [], [],
+                    'void',
+                    new TextRange(null, 499, 514),
+                    []
+                ))
+            .addClassMethod(
+                new ClassMethodData(
+                    '$onDestroy',
+                    540, 575,
+                    [], [],
+                    'void',
+                    new TextRange(null, 560, 575),
+                    []
+                ))
+            .addClass(new TSTranspilerClassData('ExtendedTestComponent', 585, 828, 'TestComponent', ['IController'], null))
             .addClassDecorator(new DecoratorData(
                 'Component',
                 [
@@ -275,8 +447,18 @@ describe('transpiler spec', () => {
                 `@Component({selector: 'ng-alchemy-extended-test', template: 'new better component'})`,
                 603, 687
             ))
-            .addClassMethod(new ClassMethodData('$onDestroy', 783, 818, [], [], 'void',
-                new TextRange(null, 803, 818)))
+            .addClassMethod(
+                new ClassMethodData(
+                    '$onDestroy',
+                    783,
+                    818,
+                    [],
+                    [],
+                    'void',
+                    new TextRange(null, 803, 818),
+                    []
+                )
+            )
             .withConfig(new TSTranspilerDataConfig())
             .build()
         );

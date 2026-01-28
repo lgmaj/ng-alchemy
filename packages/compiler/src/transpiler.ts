@@ -34,7 +34,7 @@ export class TSTranspiler {
 
     private visitor(node: ts.Node, source: ts.SourceFile): void {
         if (ts.isClassDeclaration(node)) {
-            this.dataBuilder.addClass(TSTranspilerClassData.fromTsSource(node));
+            this.dataBuilder.addClass(TSTranspilerClassData.fromTsSource(node, source));
 
             node.members.filter(ts.isPropertyDeclaration).forEach(property => {
                 this.dataBuilder.addClassProperty(ClassPropertyData.fromTsSource(property, source));
