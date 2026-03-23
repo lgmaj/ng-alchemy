@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## 0.3.2
+
+- fix template loader, template will only be loaded if templateUrl is of type StringLiteral
+
 ## 0.3.1
 
 - add constructor data
