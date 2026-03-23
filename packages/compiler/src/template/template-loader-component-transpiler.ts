@@ -1,13 +1,22 @@
 import * as ts from "typescript";
 import {ComponentTranspiler} from "./component-transpiler";
 import {TemplateTranspilerContext} from "./template-transpiler-context";
-import {addOrUpdateObjectProperty, objectGetPropertyText, objectHasProperty, removeObjectProperty} from "../object";
+import {
+    addOrUpdateObjectProperty,
+    objectGetPropertyText,
+    objectHasProperty,
+    objectHasPropertyKind,
+    removeObjectProperty
+} from "../object";
 import {readFile, resolvePath} from "../filesystem";
 import {SupportedComponentProperties, ValueObject} from "../public_api";
 
 export class TemplateLoaderComponentTranspiler implements ComponentTranspiler {
     transpile(config: ValueObject, context: TemplateTranspilerContext): ValueObject {
-        if (context.config.template.load && objectHasProperty(config, SupportedComponentProperties.templateUrl)) {
+        if (
+            context.config.template.load &&
+            objectHasPropertyKind(config, SupportedComponentProperties.templateUrl, ts.SyntaxKind.StringLiteral)
+        ) {
             const templateFileName: string = objectGetPropertyText(config, SupportedComponentProperties.templateUrl);
             context.api.addDependency(resolveTemplatePath(context.path, templateFileName));
             return addOrUpdateObjectProperty(
